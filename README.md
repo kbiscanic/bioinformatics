@@ -8,7 +8,7 @@ Course information
 ------------------
 University of Zagreb
 
-Faculty of Electrical Engineering and Informatics
+Faculty of Electrical Engineering and Computing
 
 Bioinformatics
 
