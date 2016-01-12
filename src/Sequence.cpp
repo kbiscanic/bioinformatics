@@ -4,3 +4,8 @@ Sequence::Sequence(const string& identifier, const string& data) : identifier_(i
 {
 
 };
+
+Sequence::~Sequence()
+{
+
+};

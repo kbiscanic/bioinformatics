@@ -52,6 +52,7 @@ const vector<Sequence*> Parser::readSequences()
     return sequences;
 };
 
+/* 'Unit' test
 int main()
 {
     Parser p("test/data/Escherichia_coli.GCA_000967155.1.30.dna.toplevel.fa");
@@ -59,3 +60,4 @@ int main()
 
     cout << sequences.size();
 }
+*/
