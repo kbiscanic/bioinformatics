@@ -62,6 +62,7 @@ public:
                     for (int stepD = 0; stepD < initialSteps.size(); stepD++) {
                         pair<string, string> finalSteps = calculateFinalSteps(initialStrings[strA], initialStrings[strB],
                                                           initialSteps[stepC], initialSteps[stepD]);
+                        // storing the resulting final rows for future reference
                         results[initialStrings[strA] + initialStrings[strB] + initialSteps[stepC] + initialSteps[stepD]] =
                             finalSteps;
                     }
@@ -71,31 +72,41 @@ public:
         }
     }
 
+    /*
+        Calculates the step-matrix determined by the two strings and two initial vectors provided.
+        The step matrix has two parts, vertical and horizontal steps, stored in lastSubV and lastSubH.
+    */
     void calculateSubmatrix(string strLeft, string strTop, string stepLeft, string stepTop) {
-        vector<int> leftSteps = stepsToVector(stepLeft);
-        vector<int> topSteps = stepsToVector(stepTop);
-
-        lastSubH[0] = topSteps;
+        /*
+            TODO: CHECK; MIGHT BE WRONG AFTER TRANSPOSING
+            have to transpose to keep cache functionality, huge speedup;
+            old/new way commented
+        */
         for (int i = 1; i <= this->dimension; i++) {
-            lastSubV[i][0] = leftSteps[i];
+            //lastSubV[i][0] = stepLeft[i] - '1'; // old
+            lastSubV[0][i] = stepLeft[i] - '1'; // new
+            lastSubH[0][i] = stepTop[i] - '1';
         }
 
-     //   cout << "       calculating the matrix" << endl;
         for (int i = 1; i <= this->dimension; i++){
             for (int j = 1; j <= this->dimension; j++){
                 int R = (strLeft[i] == strTop[j]) * this->replaceCost;
+                //int lastV = lastSubV[i][j - 1]; // old
+                int lastV = lastSubV[i - 1][j]; // new
+                int lastH = lastSubH[i - 1][j];
                 lastSubV[i][j] =
-                    min(min(R - lastSubH[i - 1][j],
+                    min(min(R - lastH,
                             this->deleteCost),
-                            this->insertCost + lastSubV[i][j - 1] - lastSubH[i - 1][j]);
+                            this->insertCost + lastV - lastH);
                 lastSubH[i][j] =
-                    min(min(R - lastSubV[i][j - 1],
+                    min(min(R - lastV,
                             this->insertCost),
-                            this->deleteCost + lastSubH[i - 1][j] - lastSubV[i][j - 1]);
+                            this->deleteCost + lastH - lastV);
             }
         }
 
-   /*     cout << "left " << strLeft << " top " << strTop << " stepleft "
+/*      // DEBUG
+        cout << "left " << strLeft << " top " << strTop << " stepleft "
         << stepsToPrettyString(stepLeft) << " steptop " << stepsToPrettyString(stepTop) << endl;
         cout << "vertical:" << endl;
         for (int i = 0; i <= this->dimension; i++){
@@ -109,19 +120,39 @@ public:
                 cout << stepMatrixH[i][j] << " ";
             cout << endl;
         }
-
         system("pause");
 */
+    }
+
+    pair<string, string> calculateFinalSteps(string strLeft, string strTop, string stepLeft,
+            string stepTop) {
+        calculateSubmatrix(strLeft, strTop, stepLeft, stepTop);
+        /*
+            // WARNING: check calculateSubmatrix() comments
+            // old
+        vector<int> stepRight(this->dimension + 1, 0);
+        for (int i = 1; i <= this->dimension; i++){
+            //stepRight[i] = lastSubV[i][this->dimension];
+        }
+        */
+        vector<int> stepRight = lastSubV[this->dimension];
+        vector<int> stepBot = lastSubH[this->dimension];
+
+        return make_pair(stepsToString(stepRight), stepsToString(stepBot));
     }
 
     /*
         Args: left string, top string, left steps, top steps
         Returns: bottom steps, right steps
     */
-    pair<string, string> getFinalSteps(string strLeft, string strTop, string stepLeft, string stepTop) {
+    inline pair<string, string> getFinalSteps(string strLeft, string strTop, string stepLeft, string stepTop) {
         return results[strLeft + strTop + stepLeft + stepTop];
     }
 
+    /*
+        Transforms the step vector to a string. The string characters have no special meaning,
+        strings are used for easier mapping.
+    */
     static string stepsToString(vector<int> steps) {
         string ret = "";
         ret.reserve(steps.size());
@@ -131,6 +162,11 @@ public:
         return ret;
     }
 
+    /*
+        Transforms the string of steps (possibly a result of stepsToString()) to a vector of steps,
+        where each step value is expected to be in {-1, 0, 1}. I.e., the steps string characters
+        are expected to be in {'0', '1', '2'}.
+    */
     static vector<int> stepsToVector(string steps) {
         vector<int> ret;
         ret.reserve(steps.size());
@@ -140,6 +176,9 @@ public:
         return ret;
     }
 
+    /*
+        Adds spaces and signs to the step string and transforms the values to real step values.
+    */
     static string stepsToPrettyString(string steps) {
         string ret = "";
         for (int i = 0; i < steps.size(); i++) {
@@ -152,20 +191,6 @@ public:
             }
         }
         return ret;
-    }
-
-    pair<string, string> calculateFinalSteps(string strLeft, string strTop, string stepLeft,
-            string stepTop) {
-    //    cout << "   calculating final steps start" << endl;
-        calculateSubmatrix(strLeft, strTop, stepLeft, stepTop);
-      //  cout << "   matrix retrieved" << endl;
-        vector<int> stepRight(this->dimension + 1, 0);
-        for (int i = 1; i <= this->dimension; i++)
-            stepRight[i] = lastSubV[i][this->dimension];
-
-        vector<int> stepBot = lastSubH[this->dimension];
-
-        return make_pair(stepsToString(stepRight), stepsToString(stepBot));
     }
 
     void generateInitialSteps(int pos, string currStep) {
