@@ -18,6 +18,7 @@ Four Russians algorithm.
 #include <map>
 #include <cmath>
 #include <string>
+#include <cstdlib>
 
 using namespace std;
 
@@ -40,8 +41,19 @@ public:
         printf("Clearing the submatrix data...\n");
         results.clear();
 
-        generateInitialSteps(0, "");
+        generateInitialSteps(0, "1");
         generateInitialStrings(0, " ");
+
+        printDebug();
+
+        // setting up temporary matrix storage
+        lastSubH.reserve(this->dimension + 1);
+        lastSubV.reserve(this->dimension + 1);
+        vector<int> rowVec(this->dimension + 1, 0);
+        for (int i = 0; i <= this->dimension; i++) {
+            lastSubH.push_back(rowVec);
+            lastSubV.push_back(rowVec);
+        }
 
         // all possible initial steps and strings combinations
         for (int strA = 0; strA < initialStrings.size(); strA++) {
@@ -51,47 +63,55 @@ public:
                         pair<string, string> finalSteps = calculateFinalSteps(initialStrings[strA], initialStrings[strB],
                                                           initialSteps[stepC], initialSteps[stepD]);
                         results[initialStrings[strA] + initialStrings[strB] + initialSteps[stepC] + initialSteps[stepD]] =
-                            finalSteps.first + finalSteps.second;
+                            finalSteps;
                     }
                 }
             }
+            cout << strA + 1 << " / " << initialStrings.size() << " (submatrices: " << results.size() << " )" << endl;
         }
     }
 
-    pair<vector<vector<int> >, vector<vector<int> > > calculateSubmatrix(string strLeft, string strTop, string stepLeft, string stepTop) {
+    void calculateSubmatrix(string strLeft, string strTop, string stepLeft, string stepTop) {
         vector<int> leftSteps = stepsToVector(stepLeft);
         vector<int> topSteps = stepsToVector(stepTop);
 
-        vector<vector<int> > stepMatrixV, stepMatrixH;
-        stepMatrixV.reserve(this->dimension + 1);
-        stepMatrixH.reserve(this->dimension + 1);
-
-        vector<int> rowVec(this->dimension + 1, 0);
+        lastSubH[0] = topSteps;
         for (int i = 1; i <= this->dimension; i++) {
-            stepMatrixV.push_back(rowVec);
-            stepMatrixH.push_back(rowVec);
+            lastSubV[i][0] = leftSteps[i];
         }
 
-        stepMatrixH.push_back(topSteps);
-        for (int i = 1; i <= this->dimension; i++) {
-            stepMatrixV[i][0] = leftSteps[i];
-        }
-
+     //   cout << "       calculating the matrix" << endl;
         for (int i = 1; i <= this->dimension; i++){
             for (int j = 1; j <= this->dimension; j++){
                 int R = (strLeft[i] == strTop[j]) * this->replaceCost;
-                stepMatrixV[i][j] =
-                    min(min(R - stepMatrixH[i - 1][j],
+                lastSubV[i][j] =
+                    min(min(R - lastSubH[i - 1][j],
                             this->deleteCost),
-                            this->insertCost + stepMatrixV[i][j - 1] - stepMatrixH[i - 1][j]);
-                stepMatrixH[i][j] =
-                    min(min(R - stepMatrixV[i][j - 1],
+                            this->insertCost + lastSubV[i][j - 1] - lastSubH[i - 1][j]);
+                lastSubH[i][j] =
+                    min(min(R - lastSubV[i][j - 1],
                             this->insertCost),
-                            this->deleteCost + stepMatrixH[i - 1][j] - stepMatrixV[i][j - 1]);
+                            this->deleteCost + lastSubH[i - 1][j] - lastSubV[i][j - 1]);
             }
         }
 
-        return make_pair(stepMatrixV, stepMatrixH);
+   /*     cout << "left " << strLeft << " top " << strTop << " stepleft "
+        << stepsToPrettyString(stepLeft) << " steptop " << stepsToPrettyString(stepTop) << endl;
+        cout << "vertical:" << endl;
+        for (int i = 0; i <= this->dimension; i++){
+            for (int j = 0; j <= this->dimension; j++)
+                cout << stepMatrixV[i][j] << " ";
+            cout << endl;
+        }
+        cout << "horizontal:" << endl;
+        for (int i = 0; i <= this->dimension; i++){
+            for (int j = 0; j <= this->dimension; j++)
+                cout << stepMatrixH[i][j] << " ";
+            cout << endl;
+        }
+
+        system("pause");
+*/
     }
 
     /*
@@ -99,10 +119,7 @@ public:
         Returns: bottom steps, right steps
     */
     pair<string, string> getFinalSteps(string strLeft, string strTop, string stepLeft, string stepTop) {
-        string resultingSteps = results[strLeft + strTop + stepLeft + stepTop];
-        return make_pair(
-                   resultingSteps.substr(0, resultingSteps.size() / 2),
-                   resultingSteps.substr(resultingSteps.size() / 2, string::npos));
+        return results[strLeft + strTop + stepLeft + stepTop];
     }
 
     static string stepsToString(vector<int> steps) {
@@ -137,22 +154,20 @@ public:
         return ret;
     }
 
-private:
-
     pair<string, string> calculateFinalSteps(string strLeft, string strTop, string stepLeft,
             string stepTop) {
-        pair<vector<vector<int> >, vector<vector<int> > > stepMatrix = calculateSubmatrix(strLeft, strTop, stepLeft, stepTop);
-
+    //    cout << "   calculating final steps start" << endl;
+        calculateSubmatrix(strLeft, strTop, stepLeft, stepTop);
+      //  cout << "   matrix retrieved" << endl;
         vector<int> stepRight(this->dimension + 1, 0);
         for (int i = 1; i <= this->dimension; i++)
-            stepRight[i] = stepMatrix.first[i][this->dimension];
+            stepRight[i] = lastSubV[i][this->dimension];
 
-        vector<int> stepBot = stepMatrix.second[this->dimension];
+        vector<int> stepBot = lastSubH[this->dimension];
 
         return make_pair(stepsToString(stepRight), stepsToString(stepBot));
     }
 
-    // TODO: first step has to be 0?
     void generateInitialSteps(int pos, string currStep) {
         if (pos == this->dimension) {
             initialSteps.push_back(currStep);
@@ -187,6 +202,8 @@ private:
             cout << initialStrings[i] << endl;
     }
 
+private:
+
     int dimension;
     int replaceCost;
     int deleteCost;
@@ -194,13 +211,14 @@ private:
     string alphabet;
     vector<string> initialSteps;
     vector<string> initialStrings;
-    map<string, string> results;
+    vector<vector<int> > lastSubH, lastSubV;
+    map<string, pair<string, string> > results;
 
 };
 
 int main() {
-    SubmatrixCalculator calc(4, "ATGC");
+    SubmatrixCalculator calc(3, "ATGC");
     calc.calculate();
-    //calc.printDebug();
+
     return 0;
 }
