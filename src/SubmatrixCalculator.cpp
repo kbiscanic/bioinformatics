@@ -27,7 +27,8 @@ class SubmatrixCalculator {
 
 public:
 
-    SubmatrixCalculator(int _dimension, string _alphabet, int _replaceCost = 2, int _deleteCost = 1, int _insertCost = 1) {
+    SubmatrixCalculator(int _dimension, string _alphabet, int _replaceCost = 2, int _deleteCost = 1,
+                        int _insertCost = 1) {
         this->dimension = _dimension;
         this->alphabet = _alphabet;
         this->replaceCost = _replaceCost;
@@ -72,7 +73,7 @@ public:
                         key += initialSteps[stepD];
                         // storing the resulting final rows for future reference
                         resultIndex[hash(key)] = calculateFinalSteps(initialStrings[strA], initialStrings[strB],
-                                                            initialSteps[stepC], initialSteps[stepD]);
+                                                 initialSteps[stepC], initialSteps[stepD]);
                         //result[hash(key)] = calculateFinalSteps(initialStrings[strA], initialStrings[strB],
                         //                                  initialSteps[stepC], initialSteps[stepD]);
                     }
@@ -80,23 +81,34 @@ public:
             }
             //cout << strA + 1 << " / " << initialStrings.size() << " (submatrices: " << results.size() << " )" << endl;
             cout << strA + 1 << " / " << initialStrings.size() << " (submatrices: "
-                << (strA + 1) * initialStrings.size() * initialSteps.size() * initialSteps.size() << " )" << endl;
+                 << (strA + 1) * initialStrings.size() * initialSteps.size() * initialSteps.size() << " )" << endl;
         }
         cout << "Submatrix calculation time: " << (clock()-startTime)/double(CLOCKS_PER_SEC) << "s" << endl;
     }
 
-    const long long HASH_BASE = 137;
-    inline long long hash(string x){
-        long long ret = 0;
-        for (int i = 0; i < x.size(); i++){
-            ret = (ret * HASH_BASE + x[i]);
-        }
-        ret &= this->submatrixCountLimit - 1; // fancy bit-work
-        return ret;
-    }
+    pair<vector<int>, pair<int, int> > getSubmatrixPath(string strLeft, string strTop, string stepLeft,
+            string stepTop, int finalRow, int finalCol) {
 
-    inline int mmin(int x, int y, int z){
-        return x>y?(y<z?y:z):x<z?x:z;
+        calculateSubmatrix(strLeft, strTop, stepLeft, stepTop);
+
+        int i = finalRow;
+        int j = finalCol;
+        while (i > 0 && j > 0){
+            // TODO
+        }
+
+        pair<int, int> nextMatrix;
+        if (i == 0 && j == 0){
+            nextMatrix = make_pair(-1, -1);
+        }
+        else if (i == 0){
+            nextMatrix = make_pair(-1, 0);
+        }
+        else {
+            nextMatrix = make_pair(0, -1);
+        }
+
+        return make_pair(operations, nextMatrix);
     }
 
     /*
@@ -115,8 +127,8 @@ public:
             lastSubH[0][i] = stepTop[i] - '1';
         }
 
-        for (int i = 1; i <= this->dimension; i++){
-            for (int j = 1; j <= this->dimension; j++){
+        for (int i = 1; i <= this->dimension; i++) {
+            for (int j = 1; j <= this->dimension; j++) {
                 int R = (strLeft[i] == strTop[j]) * this->replaceCost;
                 //int lastV = lastSubV[i][j - 1]; // old
                 int lastV = lastSubV[i - 1][j]; // new
@@ -136,25 +148,28 @@ public:
             }
         }
 
-/*      // DEBUG
-        cout << "left " << strLeft << " top " << strTop << " stepleft "
-        << stepsToPrettyString(stepLeft) << " steptop " << stepsToPrettyString(stepTop) << endl;
-        cout << "vertical:" << endl;
-        for (int i = 0; i <= this->dimension; i++){
-            for (int j = 0; j <= this->dimension; j++)
-                cout << stepMatrixV[i][j] << " ";
-            cout << endl;
-        }
-        cout << "horizontal:" << endl;
-        for (int i = 0; i <= this->dimension; i++){
-            for (int j = 0; j <= this->dimension; j++)
-                cout << stepMatrixH[i][j] << " ";
-            cout << endl;
-        }
-        system("pause");
-*/
+        /*      // DEBUG
+                cout << "left " << strLeft << " top " << strTop << " stepleft "
+                << stepsToPrettyString(stepLeft) << " steptop " << stepsToPrettyString(stepTop) << endl;
+                cout << "vertical:" << endl;
+                for (int i = 0; i <= this->dimension; i++){
+                    for (int j = 0; j <= this->dimension; j++)
+                        cout << stepMatrixV[i][j] << " ";
+                    cout << endl;
+                }
+                cout << "horizontal:" << endl;
+                for (int i = 0; i <= this->dimension; i++){
+                    for (int j = 0; j <= this->dimension; j++)
+                        cout << stepMatrixH[i][j] << " ";
+                    cout << endl;
+                }
+                system("pause");
+        */
     }
 
+    /*
+        Calculates the final step vectors for a given initial submatrix description.
+    */
     pair<string, string> calculateFinalSteps(string strLeft, string strTop, string stepLeft,
             string stepTop) {
         calculateSubmatrix(strLeft, strTop, stepLeft, stepTop);
@@ -173,12 +188,20 @@ public:
     }
 
     /*
-        Args: left string, top string, left steps, top steps
-        Returns: bottom steps, right steps
+        Returns the precalculated final step vectors for a given initial submatrix description.
     */
-    inline pair<string, string> getFinalSteps(string strLeft, string strTop, string stepLeft, string stepTop) {
+    inline pair<string, string> getFinalSteps(string strLeft, string strTop, string stepLeft,
+            string stepTop) {
         //return results[hash(strLeft + strTop + stepLeft + stepTop)];
         return resultIndex[hash(strLeft + strTop + stepLeft + stepTop)];
+    }
+
+    /*
+        Returns the sum of the step values for a given step string.
+    */
+    inline static int sumSteps(string steps) {
+        vector<int> stepValues = stepsToVector(steps);
+        return accumulate(stepValues.begin(), stepValues.end());
     }
 
     /*
@@ -257,6 +280,20 @@ public:
             cout << stepsToPrettyString(initialSteps[i]) << endl;
         for (int i = 0; i < initialStrings.size(); i++)
             cout << initialStrings[i] << endl;
+    }
+
+    const long long HASH_BASE = 137;
+    inline long long hash(string x) {
+        long long ret = 0;
+        for (int i = 0; i < x.size(); i++) {
+            ret = (ret * HASH_BASE + x[i]);
+        }
+        ret &= this->submatrixCountLimit - 1; // fancy bit-work
+        return ret;
+    }
+
+    inline int mmin(int x, int y, int z) {
+        return x>y?(y<z?y:z):x<z?x:z;
     }
 
 private:
