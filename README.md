@@ -1,6 +1,6 @@
-# bioinformatics project
+# Fast string alignment calculation
 
-Implementation of faster algorithm for computing string edit distances.
+Implementation of faster algorithm for computing string edit distances and calculation of string alignment.
 
 http://www.sciencedirect.com/science/article/pii/0022000080900021
 
