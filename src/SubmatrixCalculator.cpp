@@ -91,10 +91,7 @@ public:
         for (int i = 0; i < x.size(); i++){
             ret = (ret * HASH_BASE + x[i]);
         }
-        ret %= this->submatrixCountLimit;
-        if (ret < 0){
-            ret += this->submatrixCountLimit;
-        }
+        ret &= this->submatrixCountLimit - 1; // fancy bit-work
         return ret;
     }
 
@@ -271,7 +268,7 @@ private:
     // the actual maximum number of submatrices should be much lower
     // in order to decrease the possibility of hash collisions
     // when storing results
-    const long long submatrixCountLimit = 15485863; // prime, used to % hashes
+    const long long submatrixCountLimit = 16777216; // 2^24, coprime with hash base
     string alphabet;
     vector<string> initialSteps;
     vector<string> initialStrings;
