@@ -19,6 +19,7 @@ Four Russians algorithm.
 #include <cmath>
 #include <string>
 #include <cstdlib>
+#include <ctime>
 
 using namespace std;
 
@@ -35,6 +36,10 @@ public:
 
         this->initialSteps.reserve(pow(3, _dimension));
         this->initialStrings.reserve(pow(_alphabet.size(), _dimension));
+
+        int startTime = clock();
+        this->resultIndex = new pair<string, string>[this->submatrixCountLimit];
+        cout << "Allocation time: " << (clock()-startTime)/double(CLOCKS_PER_SEC) << "s" << endl;
     }
 
     void calculate() {
@@ -44,7 +49,7 @@ public:
         generateInitialSteps(0, "1");
         generateInitialStrings(0, " ");
 
-        printDebug();
+        //printDebug();
 
         // setting up temporary matrix storage
         lastSubH.reserve(this->dimension + 1);
@@ -56,29 +61,54 @@ public:
         }
 
         // all possible initial steps and strings combinations
+        int startTime = clock();
         for (int strA = 0; strA < initialStrings.size(); strA++) {
             for (int strB = 0; strB < initialStrings.size(); strB++) {
                 for (int stepC = 0; stepC < initialSteps.size(); stepC++) {
                     for (int stepD = 0; stepD < initialSteps.size(); stepD++) {
-                        pair<string, string> finalSteps = calculateFinalSteps(initialStrings[strA], initialStrings[strB],
-                                                          initialSteps[stepC], initialSteps[stepD]);
+                        string key = initialStrings[strA];
+                        key += initialStrings[strB];
+                        key += initialSteps[stepC];
+                        key += initialSteps[stepD];
                         // storing the resulting final rows for future reference
-                        results[initialStrings[strA] + initialStrings[strB] + initialSteps[stepC] + initialSteps[stepD]] =
-                            finalSteps;
+                        resultIndex[hash(key)] = calculateFinalSteps(initialStrings[strA], initialStrings[strB],
+                                                            initialSteps[stepC], initialSteps[stepD]);
+                        //result[hash(key)] = calculateFinalSteps(initialStrings[strA], initialStrings[strB],
+                        //                                  initialSteps[stepC], initialSteps[stepD]);
                     }
                 }
             }
-            cout << strA + 1 << " / " << initialStrings.size() << " (submatrices: " << results.size() << " )" << endl;
+            //cout << strA + 1 << " / " << initialStrings.size() << " (submatrices: " << results.size() << " )" << endl;
+            cout << strA + 1 << " / " << initialStrings.size() << " (submatrices: "
+                << (strA + 1) * initialStrings.size() * initialSteps.size() * initialSteps.size() << " )" << endl;
         }
+        cout << "Submatrix calculation time: " << (clock()-startTime)/double(CLOCKS_PER_SEC) << "s" << endl;
+    }
+
+    const long long HASH_BASE = 137;
+    inline long long hash(string x){
+        long long ret = 0;
+        for (int i = 0; i < x.size(); i++){
+            ret = (ret * HASH_BASE + x[i]);
+        }
+        ret %= this->submatrixCountLimit;
+        if (ret < 0){
+            ret += this->submatrixCountLimit;
+        }
+        return ret;
+    }
+
+    inline int mmin(int x, int y, int z){
+        return x>y?(y<z?y:z):x<z?x:z;
     }
 
     /*
         Calculates the step-matrix determined by the two strings and two initial vectors provided.
         The step matrix has two parts, vertical and horizontal steps, stored in lastSubV and lastSubH.
     */
-    void calculateSubmatrix(string strLeft, string strTop, string stepLeft, string stepTop) {
+    inline void calculateSubmatrix(string strLeft, string strTop, string stepLeft, string stepTop) {
         /*
-            TODO: CHECK; MIGHT BE WRONG AFTER TRANSPOSING
+            TODO: CHECK: MIGHT BE WRONG AFTER TRANSPOSING
             have to transpose to keep cache functionality, huge speedup;
             old/new way commented
         */
@@ -94,14 +124,18 @@ public:
                 //int lastV = lastSubV[i][j - 1]; // old
                 int lastV = lastSubV[i - 1][j]; // new
                 int lastH = lastSubH[i - 1][j];
-                lastSubV[i][j] =
+                /*lastSubV[i][j] =
                     min(min(R - lastH,
                             this->deleteCost),
                             this->insertCost + lastV - lastH);
                 lastSubH[i][j] =
                     min(min(R - lastV,
                             this->insertCost),
-                            this->deleteCost + lastH - lastV);
+                            this->deleteCost + lastH - lastV);*/
+                lastSubV[i][j] =
+                    mmin(R - lastH, this->deleteCost, this->insertCost + lastV - lastH);
+                lastSubH[i][j] =
+                    mmin(R - lastV, this->insertCost, this->deleteCost + lastH - lastV);
             }
         }
 
@@ -146,7 +180,8 @@ public:
         Returns: bottom steps, right steps
     */
     inline pair<string, string> getFinalSteps(string strLeft, string strTop, string stepLeft, string stepTop) {
-        return results[strLeft + strTop + stepLeft + stepTop];
+        //return results[hash(strLeft + strTop + stepLeft + stepTop)];
+        return resultIndex[hash(strLeft + strTop + stepLeft + stepTop)];
     }
 
     /*
@@ -233,11 +268,16 @@ private:
     int replaceCost;
     int deleteCost;
     int insertCost;
+    // the actual maximum number of submatrices should be much lower
+    // in order to decrease the possibility of hash collisions
+    // when storing results
+    const long long submatrixCountLimit = 15485863; // prime, used to % hashes
     string alphabet;
     vector<string> initialSteps;
     vector<string> initialStrings;
     vector<vector<int> > lastSubH, lastSubV;
-    map<string, pair<string, string> > results;
+    map<long long, pair<string, string> > results;
+    pair<string, string>* resultIndex;
 
 };
 
