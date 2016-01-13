@@ -28,7 +28,8 @@ class SubmatrixCalculator {
 
 public:
 
-    SubmatrixCalculator(int _dimension, string _alphabet, char _blankCharacter = '-', int _replaceCost = 2, int _deleteCost = 1,
+    SubmatrixCalculator(int _dimension, string _alphabet, char _blankCharacter = '-', int _replaceCost = 2,
+                        int _deleteCost = 1,
                         int _insertCost = 1) {
         this->dimension = _dimension;
         this->alphabet = _alphabet;
@@ -49,8 +50,8 @@ public:
         printf("Clearing the submatrix data...\n");
         results.clear();
 
-        generateInitialSteps(0, "1");
-        generateInitialStrings(0, " ");
+        generateInitialSteps(0, "");
+        generateInitialStrings(0, "", false);
 
         //printDebug();
 
@@ -88,7 +89,8 @@ public:
         cout << "Submatrix calculation time: " << (clock()-startTime)/double(CLOCKS_PER_SEC) << "s" << endl;
     }
 
-    pair<vector<int>, pair<pair<int, int>, pair<int, int> > > getSubmatrixPath(string strLeft, string strTop, string stepLeft,
+    pair<vector<int>, pair<pair<int, int>, pair<int, int> > > getSubmatrixPath(string strLeft, string strTop,
+            string stepLeft,
             string stepTop, int finalRow, int finalCol) {
 
         calculateSubmatrix(strLeft, strTop, stepLeft, stepTop);
@@ -96,21 +98,19 @@ public:
         int i = finalRow;
         int j = finalCol;
         vector<int> operations;
-        while (i > 0 && j > 0){
+        while (i > 0 && j > 0) {
             // TODO
         }
 
         pair<int, int> nextMatrix;
         pair<int, int> nextCell;
-        if (i == 0 && j == 0){
+        if (i == 0 && j == 0) {
             nextMatrix = make_pair(-1, -1);
             nextCell = make_pair(this->dimension, this->dimension);
-        }
-        else if (i == 0){
+        } else if (i == 0) {
             nextMatrix = make_pair(-1, 0);
             nextCell = make_pair(this->dimension, j);
-        }
-        else {
+        } else {
             nextMatrix = make_pair(0, -1);
             nextCell = make_pair(i, this->dimension);
         }
@@ -130,13 +130,15 @@ public:
         */
         for (int i = 1; i <= this->dimension; i++) {
             //lastSubV[i][0] = stepLeft[i] - '1'; // old
-            lastSubV[0][i] = stepLeft[i] - '1'; // new
-            lastSubH[0][i] = stepTop[i] - '1';
+            lastSubV[0][i] = stepLeft[i - 1] - '1'; // new
+            lastSubH[0][i] = stepTop[i - 1] - '1';
         }
 
         for (int i = 1; i <= this->dimension; i++) {
             for (int j = 1; j <= this->dimension; j++) {
-                int R = (strLeft[i] == strTop[j]) * this->replaceCost;
+                int R = (strLeft[i - 1] == strTop[j - 1]) * this->replaceCost;
+                if (strLeft[i - 1] == blankCharacter or strTop[j - 1] == blankCharacter)
+                    R = 0;
                 //int lastV = lastSubV[i][j - 1]; // old
                 int lastV = lastSubV[i - 1][j]; // new
                 int lastH = lastSubH[i - 1][j];
@@ -213,7 +215,7 @@ public:
 
     /*
         Transforms the step vector to a string. The string characters have no special meaning,
-        strings are used for easier mapping.
+        strings are used for easier mapping. Check SubmatrixCalculator::stepsToVector comments.
     */
     static string stepsToString(vector<int> steps) {
         string ret = "";
@@ -268,17 +270,23 @@ public:
         }
     }
 
-    void generateInitialStrings(int pos, string currString) {
+    void generateInitialStrings(int pos, string currString, bool blanks) {
         if (pos == this->dimension) {
             initialStrings.push_back(currString);
             return;
         }
 
-        for (int i = 0; i < this->alphabet.size(); i++) {
-            string tmp = currString;
-            tmp.push_back(this->alphabet[i]);
-            generateInitialStrings(pos + 1, tmp);
+        if (!blanks) {
+            for (int i = 0; i < this->alphabet.size(); i++) {
+                string tmp = currString;
+                tmp.push_back(this->alphabet[i]);
+                generateInitialStrings(pos + 1, tmp, false);
+            }
         }
+
+        string tmp = currString;
+        tmp.push_back(blankCharacter);
+        generateInitialStrings(pos + 1, tmp, true);
     }
 
     // DEBUG
@@ -326,6 +334,5 @@ private:
 int main() {
     SubmatrixCalculator calc(3, "ATGC");
     calc.calculate();
-
     return 0;
 }
