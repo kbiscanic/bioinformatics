@@ -69,12 +69,11 @@
 \else \if@enccp \RequirePackage[cp1250]{inputenc} \fi
 \fi
 
-\RequirePackage[croatian]{babel}
+\RequirePackage[english]{babel}
 \RequirePackage[T1]{fontenc}
 \RequirePackage{graphicx} % Uključeno jer je često korišteno
 \RequirePackage{amssymb} % Uključeno jer je često korišteno
 \RequirePackage{amsmath} % Uključeno jer je često korišteno
-\RequirePackage{fixltx2e}
 \RequirePackage{caption}
 \RequirePackage{ifthen}
 \RequirePackage{url} % Potrebno radi natbiba
@@ -115,7 +114,7 @@
 
 % Promjena naziva poglavlja ``Bibliografija'' -> ``Literatura''
 \addto\captionscroatian{%
-	\def\bibname{Literatura}
+	\def\bibname{Bibliography}
 }
 
 % Podešavanje oznaka kod listi (1. razina je crtica, 2. puni krug) 
@@ -247,11 +246,7 @@
 }
 }
 
-\if@radseminar%
-  \def\voditelj#1{\gdef\@voditelj{#1}}
-  \def\@voditelj{\@latex@warning@no@line{Voditelj nije naveden.
-  Koristi \noexpand\voditelj za definiranje}}
-\else%
+\if@radseminar\else%
   \def\thesisnumber#1{\gdef\@thesisnumber{#1}}
   \def\@thesisnumber{\@latex@warning@no@line{Broj rada nije definiran.
   Koristi \noexpand\thesisnumber za definiranje}}
@@ -264,9 +259,9 @@
 		\let\footnoterule\relax
 	
 		\begin{center}
-			{\large\sffamily SVEU\v{C}ILI\v{S}TE U ZAGREBU}
+			{\large\sffamily UNIVERSITY OF ZAGREB}
 			
-			{\large\bfseries\sffamily FAKULTET ELEKTROTEHNIKE I RA\v{C}UNARSTVA}
+			{\large\bfseries\sffamily FACULTY OF ELECTRICAL ENGINEERING AND COMPUTING}
 		\end{center}
 		\vfill
 		\begin{center}%
@@ -283,19 +278,14 @@
 			\vskip 1em%
 			{\large\sffamily\lineskip .75em%
 			\begin{tabular}[t]{c}%
-	        	\if@radseminar%
-	        	  {\itshape \@author} \\
-	        	  Voditelj: {\itshape \@voditelj}
-	        	\else
-				    \@author
-				\fi
+				\@author
 			\end{tabular}\par}%
 		\end{center}\par
 		\vfill
 		\begin{center}
 			{\sffamily\large Zagreb, 
 			\ifcase\month\or
-				sije\v{c}anj\or velja\v{c}a\or o\v{z}ujak\or travanj\or svibanj\or
+				January\or velja\v{c}a\or o\v{z}ujak\or travanj\or svibanj\or
 	   	 		lipanj\or srpanj\or kolovoz\or rujan\or listopad\or studeni\or
 	    			prosinac\fi \space \number\year.%
 	    	}
