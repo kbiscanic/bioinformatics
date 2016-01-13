@@ -20,6 +20,7 @@ Four Russians algorithm.
 #include <string>
 #include <cstdlib>
 #include <ctime>
+#include <numeric>
 
 using namespace std;
 
@@ -27,10 +28,11 @@ class SubmatrixCalculator {
 
 public:
 
-    SubmatrixCalculator(int _dimension, string _alphabet, int _replaceCost = 2, int _deleteCost = 1,
+    SubmatrixCalculator(int _dimension, string _alphabet, char _blankCharacter = '-', int _replaceCost = 2, int _deleteCost = 1,
                         int _insertCost = 1) {
         this->dimension = _dimension;
         this->alphabet = _alphabet;
+        this->blankCharacter = _blankCharacter;
         this->replaceCost = _replaceCost;
         this->deleteCost = _deleteCost;
         this->insertCost = _insertCost;
@@ -86,29 +88,34 @@ public:
         cout << "Submatrix calculation time: " << (clock()-startTime)/double(CLOCKS_PER_SEC) << "s" << endl;
     }
 
-    pair<vector<int>, pair<int, int> > getSubmatrixPath(string strLeft, string strTop, string stepLeft,
+    pair<vector<int>, pair<pair<int, int>, pair<int, int> > > getSubmatrixPath(string strLeft, string strTop, string stepLeft,
             string stepTop, int finalRow, int finalCol) {
 
         calculateSubmatrix(strLeft, strTop, stepLeft, stepTop);
 
         int i = finalRow;
         int j = finalCol;
+        vector<int> operations;
         while (i > 0 && j > 0){
             // TODO
         }
 
         pair<int, int> nextMatrix;
+        pair<int, int> nextCell;
         if (i == 0 && j == 0){
             nextMatrix = make_pair(-1, -1);
+            nextCell = make_pair(this->dimension, this->dimension);
         }
         else if (i == 0){
             nextMatrix = make_pair(-1, 0);
+            nextCell = make_pair(this->dimension, j);
         }
         else {
             nextMatrix = make_pair(0, -1);
+            nextCell = make_pair(i, this->dimension);
         }
 
-        return make_pair(operations, nextMatrix);
+        return make_pair(operations, make_pair(nextMatrix, nextCell));
     }
 
     /*
@@ -199,9 +206,9 @@ public:
     /*
         Returns the sum of the step values for a given step string.
     */
-    inline static int sumSteps(string steps) {
+    inline int sumSteps(string steps) {
         vector<int> stepValues = stepsToVector(steps);
-        return accumulate(stepValues.begin(), stepValues.end());
+        return accumulate(stepValues.begin(), stepValues.end(), 0);
     }
 
     /*
@@ -307,6 +314,7 @@ private:
     // when storing results
     const long long submatrixCountLimit = 16777216; // 2^24, coprime with hash base
     string alphabet;
+    char blankCharacter;
     vector<string> initialSteps;
     vector<string> initialStrings;
     vector<vector<int> > lastSubH, lastSubV;
