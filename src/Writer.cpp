@@ -2,32 +2,26 @@
 
 using namespace std;
 
-Writer::Writer(const char* filename)
-{
-    out_.open(filename, ofstream::out);
-};
+Writer::Writer(const char* filename) { out_.open(filename, ofstream::out); };
 
-Writer::~Writer()
-{
-    out_.close();
+Writer::~Writer() { out_.close(); }
+
+const string toStr(Sequence* seq) {
+  ostringstream out;
+  string data = seq->getData();
+  out << "s " << seq->getIdentifier() << " 0 "
+      << count_if(data.begin(), data.end(), [](char c) { return c != '-'; })
+      << " + " << data.size() << " " << data;
+  return out.str();
 }
 
-const string toStr(Sequence* seq)
-{
-    ostringstream out;
-    string data = seq->getData();
-    out << "s " << seq->getIdentifier() << " 0 " << count_if(data.begin(), data.end(), [](char c){return c != '-';}) << " + " << data.size() << " " << data;
-    return out.str();
-}
-
-void Writer::writeResults(vector<Result*> results)
-{
-    for(Result* result : results)
-    {
-        Writer::out_ << "a score=" << result->getScore() << endl;
-        Writer::out_ << toStr(result->getA()) << endl;
-        Writer::out_ << toStr(result->getB()) << endl << endl;
-    }
+void Writer::writeResults(vector<Result*> results) {
+  for (Result* result : results) {
+    Writer::out_ << "a score=" << result->getScore() << endl;
+    Writer::out_ << toStr(result->getA()) << endl;
+    Writer::out_ << toStr(result->getB()) << endl
+                 << endl;
+  }
 };
 
 /* 'Unit' test

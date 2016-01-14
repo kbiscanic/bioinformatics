@@ -1,24 +1,23 @@
 #ifndef WRITER_HPP
 #define WRITER_HPP
 
-#include<fstream>
+#include <fstream>
 #include <sstream>
-#include<vector>
+#include <vector>
 #include <algorithm>
-#include<iostream>
+#include <iostream>
 
 #include "Result.hpp"
 
-class Writer
-{
-private:
-    ofstream out_;
+class Writer {
+ private:
+  ofstream out_;
 
-public:
-    Writer(const char* filename);
-    ~Writer();
+ public:
+  Writer(const char* filename);
+  ~Writer();
 
-    void writeResults(vector<Result*> results);
+  void writeResults(vector<Result*> results);
 };
 
 #endif

@@ -8,13 +8,12 @@
 
 using namespace std;
 
-class BasicEditDistance
-{
-public:
+class BasicEditDistance {
+ public:
   string first, second;
   int result;
   float cost[256][256];
-  float dp[2][EDIST_MAX_LENGTH+1];
+  float dp[2][EDIST_MAX_LENGTH + 1];
 
   BasicEditDistance(string startingString, string targetString);
 
