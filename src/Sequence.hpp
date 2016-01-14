@@ -1,3 +1,6 @@
+#ifndef SEQUENCE_HPP
+#define SEQUENCE_HPP
+
 #include<string>
 
 using namespace std;
@@ -15,3 +18,5 @@ public:
 	const string getIdentifier() const { return identifier_; }
 	const string getData() const { return data_; }
 };
+
+#endif
