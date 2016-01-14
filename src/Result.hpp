@@ -11,7 +11,7 @@ public:
     Result(Sequence a, Sequence b, double score);
     ~Result();
 
-    const double getScore() const { return score_; }
+    double getScore() const { return score_; }
     Sequence getA() { return a_; }
     Sequence getB() { return b_; }
 };

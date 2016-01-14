@@ -20,7 +20,7 @@ const string toStr(Sequence seq)
     return out.str();
 }
 
-const void Writer::writeResults(vector<Result*> results)
+void Writer::writeResults(vector<Result*> results)
 {
     for(Result* result : results)
     {

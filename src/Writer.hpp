@@ -15,5 +15,5 @@ public:
     Writer(const char* filename);
     ~Writer();
 
-    const void writeResults(vector<Result*> results);
+    void writeResults(vector<Result*> results);
 };
