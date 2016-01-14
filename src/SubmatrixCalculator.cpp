@@ -28,7 +28,7 @@ class SubmatrixCalculator {
 
 public:
 
-    SubmatrixCalculator(int _dimension, string _alphabet, char _blankCharacter = '-', int _replaceCost = 2,
+    SubmatrixCalculator(int _dimension, string _alphabet = "atgc", char _blankCharacter = '-', int _replaceCost = 2,
                         int _deleteCost = 1,
                         int _insertCost = 1) {
         this->dimension = _dimension;
@@ -402,8 +402,8 @@ private:
 
 };
 
-int main() {
-    SubmatrixCalculator calc(3, "ATGC");
+/*int main() {
+    SubmatrixCalculator calc(3);
     calc.calculate();
     return 0;
-}
+}*/
