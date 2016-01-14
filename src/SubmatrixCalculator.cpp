@@ -167,7 +167,8 @@ public:
             for (int j = 1; j <= this->dimension; j++) {
                 int R = (strLeft[i - 1] != strTop[j - 1]) * this->replaceCost;
                 if (strLeft[i - 1] == blankCharacter or strTop[j - 1] == blankCharacter)
-                    R = 0;
+                    R = (strLeft[i - 1] != blankCharacter) * this->deleteCost
+                        + (strTop[j - 1] != blankCharacter) * this->insertCost;
 
                 // replace
                 lastSubV[i][j] = lastSubV[i - 1][j - 1] + R;
@@ -205,7 +206,8 @@ public:
             for (int j = 1; j <= this->dimension; j++) {
                 int R = (strLeft[i - 1] != strTop[j - 1]) * this->replaceCost;
                 if (strLeft[i - 1] == blankCharacter or strTop[j - 1] == blankCharacter)
-                    R = 0;
+                    R = (strLeft[i - 1] != blankCharacter) * this->deleteCost
+                        + (strTop[j - 1] != blankCharacter) * this->insertCost;
                 int lastV = lastSubV[i][j - 1];
                 int lastH = lastSubH[i - 1][j];
                 int insCost = this->insertCost * (strTop[j - 1] != blankCharacter);
@@ -214,14 +216,14 @@ public:
                     mmin(R - lastH, delCost, insCost + lastV - lastH);
                 lastSubH[i][j] =
                     mmin(R - lastV, insCost, delCost + lastH - lastV);
-               /* if (strLeft == "CC" && strTop == "CC" && stepLeft == "22" && stepTop == "22"){
+              /*  if (strLeft == "A-" && strTop == "G-" && stepLeft == "21" && stepTop == "21"){
                     cout << "lastv " << lastV << " lasth " << lastH << " R " << R << endl;
                     cout << R - lastH << " " << this->deleteCost << " " << this->insertCost + lastV - lastH << endl;
                     cout << R - lastV << " " << this->insertCost << " " << this->deleteCost + lastH - lastV << endl;
                 }*/
             }
         }/*
-        if (strLeft == "CC" && strTop == "CC" && stepLeft == "22" && stepTop == "22"){
+        if (strLeft == "A-" && strTop == "G-" && stepLeft == "21" && stepTop == "21"){
             // DEBUG
             cout << "left " << strLeft << " top " << strTop << " stepleft "
                  << stepsToPrettyString(stepLeft) << " steptop " << stepsToPrettyString(stepTop) << endl;
