@@ -27,6 +27,10 @@ using namespace std;
 class SubmatrixCalculator {
 
 public:
+    SubmatrixCalculator(){}
+    ~SubmatrixCalculator(){
+        delete this->resultIndex;
+    }
 
     SubmatrixCalculator(int _dimension, string _alphabet = "ATGC", char _blankCharacter = '-',
                         int _replaceCost = 2,
