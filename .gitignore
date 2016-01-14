@@ -127,7 +127,7 @@ acs-*.bib
 *.ist
 
 # minitoc
-*.maf
+.maf
 *.mtc
 *.mtc[0-9]
 *.mtc[1-9][0-9]
