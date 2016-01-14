@@ -30,7 +30,6 @@ const void Writer::writeResults(vector<Result*> results)
     }
 };
 
-/* 'Unit' test
 int main()
 {
     Sequence s1("test1", "ATG-TT");
@@ -45,4 +44,3 @@ int main()
     Writer w("test.out");
     w.writeResults(results);
 }
-*/

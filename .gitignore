@@ -190,3 +190,5 @@ pythontex-files-*/
 
 # Latexian
 TSWLatexianTemp*
+
+bin/
