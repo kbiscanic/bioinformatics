@@ -50,8 +50,8 @@ void fill_edit_matrix(SubmatrixCalculator subm_calc)
                                     final_columns[submatrix_i][submatrix_j-1].substr(1),
                                     final_rows[submatrix_i-1][submatrix_j].substr(1));
 
-            final_columns[submatrix_i][submatrix_j] = final_steps.second;
-            final_rows[submatrix_i][submatrix_j] = final_steps.first;
+            final_columns[submatrix_i][submatrix_j] = final_steps.first;
+            final_rows[submatrix_i][submatrix_j] = final_steps.second;
         }
     }
 }
@@ -76,8 +76,8 @@ int calc_edit_distance(SubmatrixCalculator subm_calc)
 
 int main() {
     //read strings a and b
-    string_a = "ATTACC";
-    string_b = "TAATCC";
+    string_a = "TAATCC";
+    string_b = "ATTACC";
 
     //submatrix_dim = ceil(log(string_a.size()) / log(12));
     submatrix_dim = 2;
@@ -98,7 +98,7 @@ int main() {
     initialize_edit_matrix();
     fill_edit_matrix(subm_calc);
 
-    cout << calc_edit_distance(subm_calc);
+    cout << "Edit distance: " << calc_edit_distance(subm_calc) << endl;
 
     return 0;
 }
