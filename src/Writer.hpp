@@ -1,3 +1,6 @@
+#ifndef WRITER_HPP
+#define WRITER_HPP
+
 #include<fstream>
 #include <sstream>
 #include<vector>
@@ -17,3 +20,5 @@ public:
 
     void writeResults(vector<Result*> results);
 };
+
+#endif

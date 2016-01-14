@@ -12,11 +12,11 @@ Writer::~Writer()
     out_.close();
 }
 
-const string toStr(Sequence seq)
+const string toStr(Sequence* seq)
 {
     ostringstream out;
-    string data = seq.getData();
-    out << "s " << seq.getIdentifier() << " 0 " << count_if(data.begin(), data.end(), [](char c){return c != '-';}) << " + " << data.size() << " " << data;
+    string data = seq->getData();
+    out << "s " << seq->getIdentifier() << " 0 " << count_if(data.begin(), data.end(), [](char c){return c != '-';}) << " + " << data.size() << " " << data;
     return out.str();
 }
 
@@ -30,6 +30,7 @@ void Writer::writeResults(vector<Result*> results)
     }
 };
 
+/* 'Unit' test
 int main()
 {
     Sequence s1("test1", "ATG-TT");
@@ -44,3 +45,4 @@ int main()
     Writer w("test.out");
     w.writeResults(results);
 }
+*/

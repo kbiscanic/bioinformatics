@@ -46,7 +46,6 @@ const vector<Sequence*> Parser::readSequences()
 
         Sequence * seq = new Sequence(identifier, sequence);
         sequences.push_back(seq);
-        cout << seq->getIdentifier() << endl;
     }
 
     return sequences;
