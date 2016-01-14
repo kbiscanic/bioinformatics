@@ -28,7 +28,8 @@ class SubmatrixCalculator {
 
 public:
 
-    SubmatrixCalculator(int _dimension, string _alphabet = "ATGC", char _blankCharacter = '-', int _replaceCost = 2,
+    SubmatrixCalculator(int _dimension, string _alphabet = "ATGC", char _blankCharacter = '-',
+                        int _replaceCost = 2,
                         int _deleteCost = 1,
                         int _insertCost = 1) {
         this->dimension = _dimension;
@@ -83,7 +84,7 @@ public:
                 }
             }
             //cout << strA + 1 << " / " << initialStrings.size() << " (submatrices: " << results.size() << " )" << endl;
-            if (strA % 5 == 0 or strA == initialStrings.size() - 1){
+            if (strA % 5 == 0 or strA == initialStrings.size() - 1) {
                 cout << strA + 1 << " / " << initialStrings.size() << " (submatrices: "
                      << (strA + 1) * initialStrings.size() * initialSteps.size() * initialSteps.size() << " )" << endl;
             }
@@ -113,11 +114,9 @@ public:
             operations.push_back(lastSubH[i][j]);
             if (operations[operations.size() - 1] == 1) {
                 i--;
-            }
-            else if (operations[operations.size() - 1] == 2) {
+            } else if (operations[operations.size() - 1] == 2) {
                 j--;
-            }
-            else {
+            } else {
                 i--;
                 j--;
             }
@@ -151,7 +150,8 @@ public:
          2 - moving left in the submatrix (inserting)
          3 - moving diagonally up-left in the submatrix (replacing / matching)
     */
-    void calculateCostSubmatrix(string strLeft, string strTop, string stepLeft, string stepTop, int initialCost){
+    void calculateCostSubmatrix(string strLeft, string strTop, string stepLeft, string stepTop,
+                                int initialCost) {
         lastSubV[0][0] = initialCost;
         lastSubH[0][0] = 0;
         for (int i = 1; i <= this->dimension; i++) {
@@ -173,14 +173,14 @@ public:
 
                 // insert
                 int alternative = lastSubV[i][j - 1] + this->insertCost;
-                if (lastSubV[i][j] > alternative){
+                if (lastSubV[i][j] > alternative) {
                     lastSubV[i][j] = alternative;
                     lastSubH[i][j] = 2;
                 }
 
                 // delete
                 alternative = lastSubV[i - 1][j] + this->deleteCost;
-                if (lastSubV[i][j] > alternative){
+                if (lastSubV[i][j] > alternative) {
                     lastSubV[i][j] = alternative;
                     lastSubH[i][j] = 1;
                 }
@@ -193,58 +193,48 @@ public:
         The step matrix has two parts, vertical and horizontal steps, stored in lastSubV and lastSubH.
     */
     inline void calculateSubmatrix(string strLeft, string strTop, string stepLeft, string stepTop) {
-        /*
-            TODO: CHECK: MIGHT BE WRONG AFTER TRANSPOSING
-            have to transpose to keep cache functionality, huge speedup;
-            old/new way commented
-        */
         for (int i = 1; i <= this->dimension; i++) {
-            //lastSubV[i][0] = stepLeft[i] - '1'; // old
-            lastSubV[0][i] = stepLeft[i - 1] - '1'; // new
+            lastSubV[i][0] = stepLeft[i - 1] - '1';
             lastSubH[0][i] = stepTop[i - 1] - '1';
         }
         lastSubV[0][0] = lastSubH[0][0] = 0;
 
         for (int i = 1; i <= this->dimension; i++) {
             for (int j = 1; j <= this->dimension; j++) {
-                int R = (strLeft[i - 1] == strTop[j - 1]) * this->replaceCost;
+                int R = (strLeft[i - 1] != strTop[j - 1]) * this->replaceCost;
                 if (strLeft[i - 1] == blankCharacter or strTop[j - 1] == blankCharacter)
                     R = 0;
-                //int lastV = lastSubV[i][j - 1]; // old
-                int lastV = lastSubV[i - 1][j]; // new
+                int lastV = lastSubV[i][j - 1];
                 int lastH = lastSubH[i - 1][j];
-                /*lastSubV[i][j] =
-                    min(min(R - lastH,
-                            this->deleteCost),
-                            this->insertCost + lastV - lastH);
-                lastSubH[i][j] =
-                    min(min(R - lastV,
-                            this->insertCost),
-                            this->deleteCost + lastH - lastV);*/
                 lastSubV[i][j] =
                     mmin(R - lastH, this->deleteCost, this->insertCost + lastV - lastH);
                 lastSubH[i][j] =
                     mmin(R - lastV, this->insertCost, this->deleteCost + lastH - lastV);
+               /* if (strLeft == "CC" && strTop == "CC" && stepLeft == "22" && stepTop == "22"){
+                    cout << "lastv " << lastV << " lasth " << lastH << " R " << R << endl;
+                    cout << R - lastH << " " << this->deleteCost << " " << this->insertCost + lastV - lastH << endl;
+                    cout << R - lastV << " " << this->insertCost << " " << this->deleteCost + lastH - lastV << endl;
+                }*/
             }
-        }
-
-        /*      // DEBUG
-                cout << "left " << strLeft << " top " << strTop << " stepleft "
-                << stepsToPrettyString(stepLeft) << " steptop " << stepsToPrettyString(stepTop) << endl;
-                cout << "vertical:" << endl;
-                for (int i = 0; i <= this->dimension; i++){
-                    for (int j = 0; j <= this->dimension; j++)
-                        cout << stepMatrixV[i][j] << " ";
-                    cout << endl;
-                }
-                cout << "horizontal:" << endl;
-                for (int i = 0; i <= this->dimension; i++){
-                    for (int j = 0; j <= this->dimension; j++)
-                        cout << stepMatrixH[i][j] << " ";
-                    cout << endl;
-                }
-                system("pause");
-        */
+        }/*
+        if (strLeft == "CC" && strTop == "CC" && stepLeft == "22" && stepTop == "22"){
+            // DEBUG
+            cout << "left " << strLeft << " top " << strTop << " stepleft "
+                 << stepsToPrettyString(stepLeft) << " steptop " << stepsToPrettyString(stepTop) << endl;
+            cout << "vertical:" << endl;
+            for (int i = 0; i <= this->dimension; i++) {
+                for (int j = 0; j <= this->dimension; j++)
+                    cout << lastSubV[i][j] << " ";
+                cout << endl;
+            }
+            cout << "horizontal:" << endl;
+            for (int i = 0; i <= this->dimension; i++) {
+                for (int j = 0; j <= this->dimension; j++)
+                    cout << lastSubH[i][j] << " ";
+                cout << endl;
+            }
+            system("pause");
+        }*/
     }
 
     /*
@@ -253,15 +243,12 @@ public:
     pair<string, string> calculateFinalSteps(string strLeft, string strTop, string stepLeft,
             string stepTop) {
         calculateSubmatrix(strLeft, strTop, stepLeft, stepTop);
-        /*
-            // WARNING: check calculateSubmatrix() comments
-            // old
+
         vector<int> stepRight(this->dimension + 1, 0);
         for (int i = 1; i <= this->dimension; i++){
-            //stepRight[i] = lastSubV[i][this->dimension];
+            stepRight[i] = lastSubV[i][this->dimension];
         }
-        */
-        vector<int> stepRight = lastSubV[this->dimension];
+
         vector<int> stepBot = lastSubH[this->dimension];
 
         return make_pair(stepsToString(stepRight), stepsToString(stepBot));
