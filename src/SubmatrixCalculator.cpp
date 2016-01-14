@@ -44,7 +44,8 @@ public:
 
         int startTime = clock();
         this->resultIndex = new pair<string, string>[this->submatrixCountLimit];
-        cout << "Allocation time: " << (clock()-startTime)/double(CLOCKS_PER_SEC) << "s" << endl;
+        this->times[0] = (clock()-startTime)/double(CLOCKS_PER_SEC);
+        cout << "Allocation time: " << this->times[0] << "s" << endl;
     }
 
     void calculate() {
@@ -89,7 +90,8 @@ public:
                      << (strA + 1) * initialStrings.size() * initialSteps.size() * initialSteps.size() << " )" << endl;
             }
         }
-        cout << "Submatrix calculation time: " << (clock()-startTime)/double(CLOCKS_PER_SEC) << "s" << endl;
+        this->times[1] = (clock()-startTime)/double(CLOCKS_PER_SEC);
+        cout << "Submatrix calculation time: " << this->times[1] << "s" << endl;
     }
 
     /*
@@ -386,7 +388,7 @@ private:
     vector<vector<int> > lastSubH, lastSubV;
     map<long long, pair<string, string> > results;
     pair<string, string>* resultIndex;
-
+    double times[2]; // allocation time, matrix calculation time
 };
 
 /*int main() {
