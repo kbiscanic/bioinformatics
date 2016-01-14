@@ -18,6 +18,8 @@ int submatrix_dim;
 int row_num;
 int column_num;
 
+int string_a_real_size;
+int string_b_real_size;
 
 void fill_edit_matrix(SubmatrixCalculator subm_calc)
 {
@@ -26,11 +28,31 @@ void fill_edit_matrix(SubmatrixCalculator subm_calc)
     }
 
     string initial_string = SubmatrixCalculator::stepsToString(vector<int>(submatrix_dim+1, 1));
-    for (int submatrix_j=1; submatrix_j<=column_num; submatrix_j++)
-        final_rows[0][submatrix_j] = initial_string;
+    for (int submatrix_j=1; submatrix_j<=column_num; submatrix_j++) {
+
+        if ((submatrix_j*submatrix_dim-1) >= string_b_real_size) {
+            vector<int> temp_vec (submatrix_dim+1, 0);
+            for (int i=0; i<(string_b_real_size-((submatrix_j-1)*submatrix_dim-1)); i++)
+                temp_vec[i] = 1;
+            final_rows[0][submatrix_j] = SubmatrixCalculator::stepsToString(temp_vec);
+        }
+        else {
+            final_rows[0][submatrix_j] = initial_string;
+        }
+    }
 
     for (int submatrix_i=1, alti = 1; submatrix_i<=row_num; submatrix_i++, alti = !alti) {
-        final_columns[0] = initial_string;
+
+        if ((submatrix_i*submatrix_dim-1) >= string_a_real_size) {
+            vector<int> temp_vec (submatrix_dim+1, 0);
+            for (int i=0; i<(string_a_real_size-((submatrix_i-1)*submatrix_dim-1)); i++)
+                temp_vec[i] = 1;
+            final_columns[0] = SubmatrixCalculator::stepsToString(temp_vec);
+        }
+        else {
+            final_columns[0] = initial_string;
+        }
+
         for (int submatrix_j=1, altj = 1; submatrix_j<=column_num; submatrix_j++, altj = !altj) {
 
             pair<string, string> final_steps = subm_calc.getFinalSteps(
@@ -49,22 +71,23 @@ void fill_edit_matrix(SubmatrixCalculator subm_calc)
 
 int calc_edit_distance(SubmatrixCalculator subm_calc)
 {
-    int edit_distance = string_a.size();
+    int edit_distance = string_a_real_size;
 
     for (int submatrix_j=1; submatrix_j<=column_num; submatrix_j++) {
         edit_distance += subm_calc.sumSteps(final_rows[row_num % 2][submatrix_j].substr(1));
     }
-
     return edit_distance;
 }
 
 int main() {
     //read strings a and b
-    string_a = "ATTACC";
-    string_b = "ATTACG";
+    string_a = "AG";
+    string_b = "GG";
     // uzmi max od 2 stringa za racunat, još bolje, zamijeni da je prvi max/min? uvijek?
     //submatrix_dim = ceil(log(string_a.size()) / log(3 * ALPHABET.size()) / 2);
     submatrix_dim = 2;
+    string_a_real_size = string_a.size();
+    string_b_real_size = string_b.size();
 
     cout << "Submatrix dimension: " << submatrix_dim << endl;
     cout << "String A size: " << string_a.size() << endl;
