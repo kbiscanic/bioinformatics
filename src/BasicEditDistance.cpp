@@ -60,12 +60,15 @@ void BasicEditDistance::calculate() {
 
   bool alt = 1;  // alternating the rows uses O(m) instead of O(n*m) memory
   for (int i = 1; i <= first.size(); i++, alt = !alt) {
+    dp[alt][0] = cost[first[i - 1]][EDIST_BLANK] + dp[!alt][0];
     for (int j = 1; j <= second.size(); j++) {
       dp[alt][j] = min(
           min(dp[!alt][j - 1] + cost[first[i - 1]][second[j - 1]],  // replace
               dp[!alt][j] + cost[first[i - 1]][EDIST_BLANK]),       // delete
           dp[alt][j - 1] + cost[EDIST_BLANK][second[i - 1]]);       // insert
+  //   cout << dp[alt][j] << " ";
     }
+//    cout << endl;
   }
 
   result = dp[!alt][second.size()];

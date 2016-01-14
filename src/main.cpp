@@ -39,8 +39,7 @@ int main(int argc, char** argv) {
             new Result(sequences[i], sequences[j], bed.getResult());
         results.push_back(result);
       } else if (algorithm == 'e') {
-        Solver solver(sequences[i]->getData(), sequences[j]->getData(), "ATGC",
-                      2);
+        Solver solver(sequences[i]->getData(), sequences[j]->getData());
 
         Result* result =
             new Result(sequences[i], sequences[j], solver.calculate());
