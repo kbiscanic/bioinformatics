@@ -61,10 +61,14 @@ int calc_edit_distance(SubmatrixCalculator subm_calc)
     int edit_distance = 0;
 
     for (int submatrix_i=1; submatrix_i<=row_num; submatrix_i++) {
-        edit_distance += subm_calc.sumSteps(final_columns[submatrix_i][0]);
+        edit_distance += subm_calc.sumSteps(final_columns[submatrix_i][0].substr(1));
+            cout<<edit_distance<<endl;
+
     }
+    cout<<endl;
     for (int submatrix_j=1; submatrix_j<=column_num; submatrix_j++) {
-        edit_distance += subm_calc.sumSteps(final_rows[row_num][submatrix_j]);
+        edit_distance += subm_calc.sumSteps(final_rows[row_num][submatrix_j].substr(1));
+        cout<<final_rows[row_num][submatrix_j].substr(1)<<endl;
     }
 
     return edit_distance;
@@ -72,17 +76,19 @@ int calc_edit_distance(SubmatrixCalculator subm_calc)
 
 int main() {
     //read strings a and b
-    string_a = "atccgattaaatccga";
-    string_b = "atccgattaaatccaa";
+    string_a = "ATTACC";
+    string_b = "TAATCC";
 
-    submatrix_dim = ceil(log(string_a.size()) / log(12));
+    //submatrix_dim = ceil(log(string_a.size()) / log(12));
+    submatrix_dim = 2;
+
     cout << "Submatrix dimension: " << submatrix_dim << endl;
     cout << "String A size: " << string_a.size() << endl;
     cout << "String B size: " << string_b.size() << endl;
 
     // pad strings to fit dimension
 
-    SubmatrixCalculator subm_calc(submatrix_dim, "atgc");
+    SubmatrixCalculator subm_calc(submatrix_dim, "ATGC");
     subm_calc.calculate();
 
     row_num = string_a.size() / (submatrix_dim);
