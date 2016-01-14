@@ -48,17 +48,17 @@ class SubmatrixCalculator {
   */
   inline pair<string, string> getFinalSteps(string strLeft, string strTop,
                                             string stepLeft, string stepTop) {
-    // return results[hash(strLeft + strTop + stepLeft + stepTop)];
-    return resultIndex[hash(strLeft + strTop + stepLeft + stepTop)];
+     return results[strLeft + strTop + stepLeft + stepTop];
+    //return resultIndex[hash(strLeft + strTop + stepLeft + stepTop)];
   }
 
   const long long HASH_BASE = 137;
   inline long long hash(string x) {
     long long ret = 0;
     for (int i = 0; i < x.size(); i++) {
-      ret = (ret * HASH_BASE + x[i]);
+      ret = (ret * HASH_BASE + x[i]) % this->submatrixCountLimit;
     }
-    ret &= this->submatrixCountLimit - 1;  // fancy bit-work
+    //ret &= this->submatrixCountLimit - 1;  // fancy bit-work
     return ret;
   }
 
@@ -97,13 +97,13 @@ class SubmatrixCalculator {
   // in order to decrease the possibility of hash collisions
   // when storing results
   const long long submatrixCountLimit =
-      16777216;  // 2^24, coprime with hash base
+      15485863;  // prime (coprime with hash base)
   string alphabet;
   char blankCharacter;
   vector<string> initialSteps;
   vector<string> initialStrings;
   vector<vector<int> > lastSubH, lastSubV;
-  map<long long, pair<string, string> > results;
+  map<string, pair<string, string> > results;
   pair<string, string>* resultIndex;
   double times[2];  // allocation time, matrix calculation time
 };

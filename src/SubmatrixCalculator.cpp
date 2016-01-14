@@ -18,7 +18,7 @@ Four Russians algorithm.
 #include "SubmatrixCalculator.hpp"
 
 SubmatrixCalculator::SubmatrixCalculator() {}
-SubmatrixCalculator::~SubmatrixCalculator() { delete this->resultIndex; }
+SubmatrixCalculator::~SubmatrixCalculator() {/* delete this->resultIndex;*/ }
 
 SubmatrixCalculator::SubmatrixCalculator(int _dimension, string _alphabet,
                                          char _blankCharacter, int _replaceCost,
@@ -34,7 +34,7 @@ SubmatrixCalculator::SubmatrixCalculator(int _dimension, string _alphabet,
   this->initialStrings.reserve(pow(_alphabet.size(), _dimension));
 
   int startTime = clock();
-  this->resultIndex = new pair<string, string>[this->submatrixCountLimit];
+  //this->resultIndex = new pair<string, string>[this->submatrixCountLimit];
   this->times[0] = (clock() - startTime) / double(CLOCKS_PER_SEC);
   cout << "Allocation time: " << this->times[0] << "s" << endl;
 }
@@ -68,13 +68,11 @@ void SubmatrixCalculator::calculate() {
           key += initialSteps[stepC];
           key += initialSteps[stepD];
           // storing the resulting final rows for future reference
-          resultIndex[hash(key)] =
+          /*resultIndex[hash(key)] =
               calculateFinalSteps(initialStrings[strA], initialStrings[strB],
-                                  initialSteps[stepC], initialSteps[stepD]);
-          // result[hash(key)] = calculateFinalSteps(initialStrings[strA],
-          // initialStrings[strB],
-          //                                  initialSteps[stepC],
-          //                                  initialSteps[stepD]);
+                                  initialSteps[stepC], initialSteps[stepD]);*/
+            results[key] = calculateFinalSteps(initialStrings[strA], initialStrings[strB],
+            initialSteps[stepC], initialSteps[stepD]);
         }
       }
     }
