@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include "BasicEditDistance.hpp"
+#include "Solver.hpp"
 #include "Parser.hpp"
 #include "Writer.hpp"
 
@@ -9,14 +10,15 @@ using namespace std;
 static const int MAX_SEQ_LENGTH = 1000000;
 
 int main(int argc, char** argv) {
-  if (argc != 3) {
-    cout << "Usage: " << argv[0] << " <input file.fa> <output file.maf>"
-         << endl;
+  if (argc != 4) {
+    cout << "Usage: " << argv[0]
+         << " <algorithm>  <input file.fa> <output file.maf>" << endl;
     return 1;
   }
 
-  char* in = argv[1];
-  char* out = argv[2];
+  char algorithm = argv[1][0];
+  char* in = argv[2];
+  char* out = argv[3];
 
   Parser p(in);
   vector<Sequence*> sequences = p.readSequences();
@@ -30,10 +32,13 @@ int main(int argc, char** argv) {
     for (unsigned int j = i + 1; j < sequences.size(); j++) {
       if (sequences[j]->getData().size() > MAX_SEQ_LENGTH) continue;
 
-      BasicEditDistance bed(sequences[i]->getData(), sequences[j]->getData());
+      if (algorithm == 'b') {
+        BasicEditDistance bed(sequences[i]->getData(), sequences[j]->getData());
 
-      Result* result = new Result(sequences[i], sequences[j], bed.getResult());
-      results.push_back(result);
+        Result* result =
+            new Result(sequences[i], sequences[j], bed.getResult());
+        results.push_back(result);
+      }
     }
   }
 
