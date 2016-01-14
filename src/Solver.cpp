@@ -2,8 +2,9 @@
 #include <iostream>
 #include <vector>
 #include <cmath>
+#include "SubmatrixCalculator.cpp"
 
-#define BLANK_CHAR ' '
+#define BLANK_CHAR '-'
 
 using namespace std;
 
@@ -23,66 +24,75 @@ void pad_string()
 
 void initialize_edit_matrix()
 {
-    string initial_string(submatrix_dim, '1');
+    final_columns.resize(row_num+1, vector<string>(row_num+1, ""));
+    final_rows.resize(column_num+1, vector<string>(column_num+1, ""));
+
+    string initial_string = SubmatrixCalculator::stepsToString(vector<int>(submatrix_dim+1, 1));
 
     for (int submatrix_i=1; submatrix_i<=row_num; submatrix_i++)
         final_columns[submatrix_i][0] = initial_string;
 
     for (int submatrix_j=1; submatrix_j<=column_num; submatrix_j++)
         final_rows[0][submatrix_j] = initial_string;
+
+    final_columns[1][0][0] -= 1;
+    final_rows[0][1][0] -= 1;
 }
 
-void fill_edit_matrix()
+void fill_edit_matrix(SubmatrixCalculator subm_calc)
 {
     for (int submatrix_i=1; submatrix_i<=row_num; submatrix_i++) {
         for (int submatrix_j=1; submatrix_j<=column_num; submatrix_j++) {
-            /*
+
             pair<string, string> final_steps = subm_calc.getFinalSteps(
                                     string_a.substr((submatrix_i-1)*submatrix_dim, submatrix_dim),
                                     string_b.substr((submatrix_j-1)*submatrix_dim, submatrix_dim),
-                                    final_columns[submatrix_i][submatrix_j-1],
-                                    final_rows[submatrix_i-1][submatrix_j]);
+                                    final_columns[submatrix_i][submatrix_j-1].substr(1),
+                                    final_rows[submatrix_i-1][submatrix_j].substr(1));
 
             final_columns[submatrix_i][submatrix_j] = final_steps.second;
-            final_rows[submatrix[i][submatrix_j] = final_steps.first;
-            */
+            final_rows[submatrix_i][submatrix_j] = final_steps.first;
         }
     }
 }
 
-int calc_edit_distance()
+int calc_edit_distance(SubmatrixCalculator subm_calc)
 {
     int edit_distance = 0;
 
-    for (int submatrix_i=1; submatrix_i<=row_num; submatrix_i++)
-        //edit_distance += subm_calc.sumSteps(final_columns[submatrix_i][0]);
-
-    for (int submatrix_j=1; submatrix_j<=column_num; submatrix_j++)
-        //edit_distance += subm_calc.sumSteps(final_rows[subs_per_side][submatrix_j]);
+    for (int submatrix_i=1; submatrix_i<=row_num; submatrix_i++) {
+        edit_distance += subm_calc.sumSteps(final_columns[submatrix_i][0]);
+    }
+    for (int submatrix_j=1; submatrix_j<=column_num; submatrix_j++) {
+        edit_distance += subm_calc.sumSteps(final_rows[row_num][submatrix_j]);
+    }
 
     return edit_distance;
 }
 
 int main() {
     //read strings a and b
-    string_a = "atcggatta";
-    string_b = "atccattcc";
+    string_a = "atccgattaaatccga";
+    string_b = "atccgattaaatccaa";
 
     submatrix_dim = ceil(log(string_a.size()) / log(12));
+    cout << "Submatrix dimension: " << submatrix_dim << endl;
+    cout << "String A size: " << string_a.size() << endl;
+    cout << "String B size: " << string_b.size() << endl;
 
     // pad strings to fit dimension
 
-    // call submatrix calculator
+    SubmatrixCalculator subm_calc(submatrix_dim, "atgc");
+    subm_calc.calculate();
 
-    int row_num = string_a.size() / submatrix_dim;
-    int column_num = string_b.size() / submatrix_dim;
-    final_columns.resize(row_num+1, vector<string>(row_num+1, ""));
-    final_rows.resize(column_num+1, vector<string>(column_num+1, ""));
+    row_num = string_a.size() / (submatrix_dim);
+    column_num = string_b.size() / (submatrix_dim);
+    cout << "Submatrices in edit table: " << row_num << "x" << column_num << endl;
 
     initialize_edit_matrix();
-    fill_edit_matrix();
+    fill_edit_matrix(subm_calc);
 
-    cout << calc_edit_distance();
+    cout << calc_edit_distance(subm_calc);
 
     return 0;
 }
