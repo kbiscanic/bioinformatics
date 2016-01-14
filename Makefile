@@ -3,7 +3,7 @@ DFLAGS =
 OFLAGS = -O3
 LFLAGS = -pthread -L. -L/usr/local/lib/
 
-OBJS = Parser.o Result.o Sequence.o Writer.o main.o
+OBJS = Parser.o Result.o Sequence.o Writer.o main.o BasicEditDistance.o
 PROGS = bioinformatics
 
 bioinformatics: pre $(OBJS)
