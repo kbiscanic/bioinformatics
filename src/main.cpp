@@ -1,5 +1,6 @@
 #include <iostream>
 
+#include "BasicEditDistance.hpp"
 #include "Parser.hpp"
 #include "Writer.hpp"
 
@@ -34,7 +35,9 @@ int main(int argc, char** argv)
       if (sequences[j]->getData().size() > MAX_SEQ_LENGTH)
         continue;
 
-      Result * result = new Result(sequences[i], sequences[j], 10.0); //TODO calculation
+      BasicEditDistance bed(sequences[i]->getData(), sequences[j]->getData());
+
+      Result * result = new Result(sequences[i], sequences[j], bed.getResult());
       results.push_back(result);
     }
   }
