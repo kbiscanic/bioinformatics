@@ -165,7 +165,7 @@ public:
 
         for (int i = 1; i <= this->dimension; i++) {
             for (int j = 1; j <= this->dimension; j++) {
-                int R = (strLeft[i - 1] == strTop[j - 1]) * this->replaceCost;
+                int R = (strLeft[i - 1] != strTop[j - 1]) * this->replaceCost;
                 if (strLeft[i - 1] == blankCharacter or strTop[j - 1] == blankCharacter)
                     R = 0;
 
@@ -174,14 +174,14 @@ public:
                 lastSubH[i][j] = 3;
 
                 // insert
-                int alternative = lastSubV[i][j - 1] + this->insertCost;
+                int alternative = lastSubV[i][j - 1] + this->insertCost * (strTop[j - 1] != blankCharacter);
                 if (lastSubV[i][j] > alternative) {
                     lastSubV[i][j] = alternative;
                     lastSubH[i][j] = 2;
                 }
 
                 // delete
-                alternative = lastSubV[i - 1][j] + this->deleteCost;
+                alternative = lastSubV[i - 1][j] + this->deleteCost * (strLeft[i - 1] != blankCharacter);
                 if (lastSubV[i][j] > alternative) {
                     lastSubV[i][j] = alternative;
                     lastSubH[i][j] = 1;
@@ -208,10 +208,12 @@ public:
                     R = 0;
                 int lastV = lastSubV[i][j - 1];
                 int lastH = lastSubH[i - 1][j];
+                int insCost = this->insertCost * (strTop[j - 1] != blankCharacter);
+                int delCost = this->deleteCost * (strLeft[i - 1] != blankCharacter);
                 lastSubV[i][j] =
-                    mmin(R - lastH, this->deleteCost, this->insertCost + lastV - lastH);
+                    mmin(R - lastH, delCost, insCost + lastV - lastH);
                 lastSubH[i][j] =
-                    mmin(R - lastV, this->insertCost, this->deleteCost + lastH - lastV);
+                    mmin(R - lastV, insCost, delCost + lastH - lastV);
                /* if (strLeft == "CC" && strTop == "CC" && stepLeft == "22" && stepTop == "22"){
                     cout << "lastv " << lastV << " lasth " << lastH << " R " << R << endl;
                     cout << R - lastH << " " << this->deleteCost << " " << this->insertCost + lastV - lastH << endl;
