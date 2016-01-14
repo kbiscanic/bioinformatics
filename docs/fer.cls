@@ -269,7 +269,7 @@
 			  {\large\sffamily ZAVR\v{S}NI RAD br.~\@thesisnumber \par}%
 			\else \if@raddiplomski%
 			  {\large\sffamily DIPLOMSKI RAD br.~\@thesisnumber \par}%
-			\else {\large\sffamily\bfseries SEMINAR \par}%
+			\else {\large\sffamily\bfseries PROJECT \par}%
 			\fi\fi
 			\if@radseminar \vskip 3em%
 			\else \vskip 1em%

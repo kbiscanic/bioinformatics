@@ -1,4 +1,4 @@
-\documentclass[times, utf8, seminar]{fer}
+\documentclass[times, utf8, seminar, numeric]{fer}
 \usepackage{booktabs}
 
 \begin{document}
@@ -14,7 +14,15 @@
 \tableofcontents
 
 \chapter{Introduction}
-Uvod rada. Nakon uvoda dolaze poglavlja u kojima se obrađuje tema.
+This project will implement, test and analyse a faster algorithm for computing string edit distances and sequence alignment. This algorithm was published by Masek and Paterson \cite{masek1980faster} and is inspired by the Four Russians Algorithm. Implemented algorithm will be compared to and tested against Needleman-Wunsch algorithm \cite{needleman1970general}, which is based on dynamic programming.
+
+The \textit{string edit distance} is defined as the minimal cost of transforming one character string into the other. Operations allowed in those transformations are only insertion, deletion and replacing of one character, each of these having defined some cost. \textit{Edit Script} is defined as the actual sequence of operations used to transform one string into the other. There are many algorithms that are using string edit distances and edit scripts for further calculations, and they are used extensively in bioinformatics for sequence alignment.
+
+Sequence alignment is a process of arranging the symbolic representations of DNA, RNA or protein sequences so that their most similar elements are juxtaposed. Such alignment is useful to identify regions of similarity and many bioinformatics tasks depend upon successful alignments.
+
+\chapter{Algorithm}
+
+\chapter{Test results}
 
 \chapter{Conclusion}
 Zaključak.

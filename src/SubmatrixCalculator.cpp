@@ -83,25 +83,48 @@ public:
                 }
             }
             //cout << strA + 1 << " / " << initialStrings.size() << " (submatrices: " << results.size() << " )" << endl;
-            cout << strA + 1 << " / " << initialStrings.size() << " (submatrices: "
-                 << (strA + 1) * initialStrings.size() * initialSteps.size() * initialSteps.size() << " )" << endl;
+            if (strA % 5 == 0 or strA == initialStrings.size() - 1){
+                cout << strA + 1 << " / " << initialStrings.size() << " (submatrices: "
+                     << (strA + 1) * initialStrings.size() * initialSteps.size() * initialSteps.size() << " )" << endl;
+            }
         }
         cout << "Submatrix calculation time: " << (clock()-startTime)/double(CLOCKS_PER_SEC) << "s" << endl;
     }
 
+    /*
+        Backtracks through the submatrix, represented by the standard 4 provided strings, until it
+        leaves the bounds and enters another submatrix. Returns the coordinates of the next submatrix
+        entered, the entry cell in the next submatrix, and a vector of operations used to traverse
+        the current matrix.
+        The initialCost parameter combined with the two initial step vectors are used to calculate
+        the edit distance submatrix because it's easier to backtrack through a cost-matrix than
+        through a step matrix.
+    */
     pair<vector<int>, pair<pair<int, int>, pair<int, int> > > getSubmatrixPath(string strLeft, string strTop,
-            string stepLeft,
-            string stepTop, int finalRow, int finalCol) {
+            string stepLeft, string stepTop, int finalRow, int finalCol, int initialCost) {
 
-        calculateSubmatrix(strLeft, strTop, stepLeft, stepTop);
+        calculateCostSubmatrix(strLeft, strTop, stepLeft, stepTop, initialCost);
 
         int i = finalRow;
         int j = finalCol;
         vector<int> operations;
+        // backtracking - for movement check SubmatrixCalculator::calculateCostSubmatrix
         while (i > 0 && j > 0) {
-            // TODO
+            operations.push_back(lastSubH[i][j]);
+            if (operations[operations.size() - 1] == 1) {
+                i--;
+            }
+            else if (operations[operations.size() - 1] == 2) {
+                j--;
+            }
+            else {
+                i--;
+                j--;
+            }
         }
 
+        // calculate the next matrix to enter depending on the initial vector we ended up on
+        // if i == 0, go left, if j == 0 go up, if both are 0 go diagonally up-left
         pair<int, int> nextMatrix;
         pair<int, int> nextCell;
         if (i == 0 && j == 0) {
@@ -119,7 +142,54 @@ public:
     }
 
     /*
-        Calculates the step-matrix determined by the two strings and two initial vectors provided.
+         Calculates the cost submatrix represented by the provided two strings and two initial vectors.
+         The cost matrix has two parts, stored in lastSubV and lastSubH (recycled matrices to save space).
+         The lastSubV matrix stores the costs and the lastSubH matrix stores the optimal paths.
+         Path codes inside lastSubH:
+         0 - initial vector cell, exiting the submatrix
+         1 - moving up in the submatrix (deleting)
+         2 - moving left in the submatrix (inserting)
+         3 - moving diagonally up-left in the submatrix (replacing / matching)
+    */
+    void calculateCostSubmatrix(string strLeft, string strTop, string stepLeft, string stepTop, int initialCost){
+        lastSubV[0][0] = initialCost;
+        lastSubH[0][0] = 0;
+        for (int i = 1; i <= this->dimension; i++) {
+            lastSubV[0][i] = lastSubV[0][i - 1] + stepTop[i - 1] - '1';
+            lastSubV[i][0] = lastSubV[i - 1][0] + stepLeft[i - 1] - '1';
+            lastSubH[0][i] = 0;
+            lastSubH[i][0] = 0;
+        }
+
+        for (int i = 1; i <= this->dimension; i++) {
+            for (int j = 1; j <= this->dimension; j++) {
+                int R = (strLeft[i - 1] == strTop[j - 1]) * this->replaceCost;
+                if (strLeft[i - 1] == blankCharacter or strTop[j - 1] == blankCharacter)
+                    R = 0;
+
+                // replace
+                lastSubV[i][j] = lastSubV[i - 1][j - 1] + R;
+                lastSubH[i][j] = 3;
+
+                // insert
+                int alternative = lastSubV[i][j - 1] + this->insertCost;
+                if (lastSubV[i][j] > alternative){
+                    lastSubV[i][j] = alternative;
+                    lastSubH[i][j] = 2;
+                }
+
+                // delete
+                alternative = lastSubV[i - 1][j] + this->deleteCost;
+                if (lastSubV[i][j] > alternative){
+                    lastSubV[i][j] = alternative;
+                    lastSubH[i][j] = 1;
+                }
+            }
+        }
+    }
+
+    /*
+        Calculates the step submatrix represented by the provided two strings and two initial vectors.
         The step matrix has two parts, vertical and horizontal steps, stored in lastSubV and lastSubH.
     */
     inline void calculateSubmatrix(string strLeft, string strTop, string stepLeft, string stepTop) {
@@ -133,6 +203,7 @@ public:
             lastSubV[0][i] = stepLeft[i - 1] - '1'; // new
             lastSubH[0][i] = stepTop[i - 1] - '1';
         }
+        lastSubV[0][0] = lastSubH[0][0] = 0;
 
         for (int i = 1; i <= this->dimension; i++) {
             for (int j = 1; j <= this->dimension; j++) {
