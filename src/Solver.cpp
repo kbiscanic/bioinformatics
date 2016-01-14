@@ -75,15 +75,77 @@ int Solver::calculate() {
   return edit_distance;
 }
 
-pair<int, pair<string, string> > Solver::calculateWithPath() {
-  fill_edit_matrix();
+pair<int, pair<string, string> > Solver::calculate_with_path() {
+    fill_edit_matrix();
 
-  // TODO
+    int edit_distance = string_a_real_size;
 
-  return pair<int, pair<string, string> >();
+    for (int submatrix_j=1; submatrix_j<=column_num; submatrix_j++) {
+        edit_distance += subm_calc->sumSteps(all_rows[row_num][submatrix_j].substr(1));
+    }
+
+    return make_pair(edit_distance, make_pair("", ""));
 }
 
-void Solver::fill_edit_matrix() {}
+void Solver::fill_edit_matrix() {
+    all_columns.resize(row_num+1, vector<string>(column_num+1, ""));
+    all_rows.resize(row_num+1, vector<string>(column_num+1, ""));
+    top_left_costs.resize(row_num+1, vector<int>(column_num+1, 0));
+
+    string initial_string = SubmatrixCalculator::stepsToString(vector<int>(submatrix_dim+1, 1));
+    for (int submatrix_j=1; submatrix_j<=column_num; submatrix_j++) {
+
+        if ((submatrix_j*submatrix_dim-1) >= string_b_real_size) {
+            vector<int> temp_vec (submatrix_dim+1, 0);
+            for (int i=0; i<(string_b_real_size-((submatrix_j-1)*submatrix_dim-1)); i++)
+                temp_vec[i] = 1;
+            all_rows[0][submatrix_j] = SubmatrixCalculator::stepsToString(temp_vec);
+        }
+        else {
+            all_rows[0][submatrix_j] = initial_string;
+        }
+    }
+
+    for (int submatrix_i=1; submatrix_i<=row_num; submatrix_i++) {
+
+        if ((submatrix_i*submatrix_dim-1) >= string_a_real_size) {
+            vector<int> temp_vec (submatrix_dim+1, 0);
+            for (int i=0; i<(string_a_real_size-((submatrix_i-1)*submatrix_dim-1)); i++)
+                temp_vec[i] = 1;
+            all_columns[submatrix_i][0] = SubmatrixCalculator::stepsToString(temp_vec);
+        }
+        else {
+            all_columns[submatrix_i][0] = initial_string;
+        }
+    }
+
+    for (int submatrix_i=1; submatrix_i<=row_num; submatrix_i++) {
+
+    if ((submatrix_i-1)*submatrix_dim > string_a_real_size)
+    top_left_costs[submatrix_i][1] = string_a_real_size;
+    else
+    top_left_costs[submatrix_i][1] = (submatrix_i-1)*submatrix_dim;
+
+        for (int submatrix_j=1; submatrix_j<=column_num; submatrix_j++) {
+
+            pair<string, string> final_steps = subm_calc->getFinalSteps(
+                                    string_a.substr((submatrix_i-1)*submatrix_dim, submatrix_dim),
+                                    string_b.substr((submatrix_j-1)*submatrix_dim, submatrix_dim),
+                                    all_columns[submatrix_i][submatrix_j-1].substr(1),
+                                    all_rows[submatrix_i-1][submatrix_j].substr(1));
+
+            all_columns[submatrix_i][submatrix_j] = final_steps.first;
+            all_rows[submatrix_i][submatrix_j] = final_steps.second;
+
+    if (submatrix_j == 1)
+        top_left_costs[submatrix_i][submatrix_j] = top_left_costs[submatrix_i][1];
+    else
+        top_left_costs[submatrix_i][submatrix_j] = top_left_costs[submatrix_i][submatrix_j-1];
+
+    top_left_costs[submatrix_i][submatrix_j] += subm_calc->sumSteps(all_rows[submatrix_i-1][submatrix_j].substr(1));
+        }
+    }
+}
 
 void Solver::fill_edit_matrix_low_memory() {
   for (int i = 0; i < 2; i++) {
