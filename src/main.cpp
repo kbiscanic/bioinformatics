@@ -38,6 +38,13 @@ int main(int argc, char** argv) {
         Result* result =
             new Result(sequences[i], sequences[j], bed.getResult());
         results.push_back(result);
+      } else if (algorithm == 'e') {
+        Solver solver(sequences[i]->getData(), sequences[j]->getData(), "ATGC",
+                      2);
+
+        Result* result =
+            new Result(sequences[i], sequences[j], solver.calculate());
+        results.push_back(result);
       }
     }
   }
