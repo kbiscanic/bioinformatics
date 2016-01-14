@@ -1,4 +1,5 @@
 # Fast string alignment calculation
+[![Build Status](https://travis-ci.org/kbiscanic/bioinformatics.svg?branch=master)](https://travis-ci.org/kbiscanic/bioinformatics)
 
 Implementation of faster algorithm for computing string edit distances and calculation of string alignment.
 
