@@ -25,6 +25,8 @@ public:
             this->string_b = str_a;
         }
 
+        this->alphabet = _alphabet;
+
         if (_submatrix_dim > 0) {
             this->submatrix_dim = _submatrix_dim;
         } else {
