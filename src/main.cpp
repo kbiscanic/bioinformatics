@@ -35,15 +35,36 @@ int main(int argc, char** argv) {
       if (algorithm == 'b') {
         BasicEditDistance bed(sequences[i]->getData(), sequences[j]->getData());
 
-        Result* result =
-            new Result(sequences[i], sequences[j], bed.getResult());
-        results.push_back(result);
-      } else if (algorithm == 'e') {
-        Solver solver(sequences[i]->getData(), sequences[j]->getData());
+        int startTime = clock();
+        int score = bed.getResult();
+        cout << "Edit distance calculation (Needleman-Wunsch): " <<
+          (clock() - startTime) / double(CLOCKS_PER_SEC) << endl;
 
         Result* result =
-            new Result(sequences[i], sequences[j], solver.calculate());
+            new Result(sequences[i], sequences[j], score);
         results.push_back(result);
+      } else if (algorithm == 'd') {
+        Solver solver(sequences[i]->getData(), sequences[j]->getData());
+
+        int startTime = clock();
+        int score = solver.calculate();
+        cout << "Edit distance calculation (Masek-Paterson): " << 
+            (clock() - startTime) / double(CLOCKS_PER_SEC) << endl;
+
+        Result* result =
+            new Result(sequences[i], sequences[j], score);
+        results.push_back(result);
+      } else {
+        Solver solver(sequences[i]->getData(), sequences[j]->getData());
+
+        int startTime = clock();
+        pair<int,pair<string,string>> res = solver.calculate_with_path();
+        cout << "Edit path calculation (Masek-Paterson): " << 
+            (clock() - startTime) / double(CLOCKS_PER_SEC) << endl;
+
+        Result* result = new Result(new Sequence(sequences[i]->getIdentifier()
+         , res.second.first), new Sequence(sequences[j]->getIdentifier()
+         , res.second.second), res.first);
       }
     }
   }
