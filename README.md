@@ -19,6 +19,10 @@ Usage
 
 > a - edit distance and **a**lignment (Masek-Paterson)
 
+Test example
+------------
+    ./bin/bioinformatics a test/data/test-100.fa test.maf
+
 Course information
 ------------------
 University of Zagreb
