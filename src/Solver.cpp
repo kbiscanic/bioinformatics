@@ -1,17 +1,23 @@
 #include "Solver.hpp"
 
+/*
+    Used to compute the edit distance and alignment between two strings
+    of genome sequences.
+
+    Function calculate_with_path() will return both the edit distance and
+    the two aligned sequences, while function calculate() will return just
+    the edit distance and thus use less memory.
+*/
 Solver::Solver(string str_a, string str_b, string _alphabet,
                int _submatrix_dim)
 {
 
     /*
         We want the calculation matrix columns to represent the shorter string
-       because
-        both the time complexity and the space complexity in the path-less version
-        depend mostly on the number of columns (in the scope of
-       submatrix-combining
-        complexities; the submatrix-combining space complexity is "negligible" in
-       total).
+        because both the time complexity and the space complexity in the path-less
+        version depend mostly on the number of columns (in the scope of
+        submatrix-combining complexities; the submatrix-combining space complexity is
+        "negligible" in total).
     */
     if (str_a.size() >= str_b.size())
     {
@@ -32,8 +38,7 @@ Solver::Solver(string str_a, string str_b, string _alphabet,
     }
     else
     {
-        // calculate the submatrix dimension using the longer string to reduce
-        // complexity
+        // calculate the submatrix dimension using the longer string to reduce complexity
         this->submatrix_dim =
             ceil(log(this->string_a.size()) / log(3 * _alphabet.size()) / 2);
     }
@@ -45,7 +50,7 @@ Solver::Solver(string str_a, string str_b, string _alphabet,
     string_a_real_size = string_a.size();
     string_b_real_size = string_b.size();
 
-    // pad strings to fit dimension
+    // pad the strings to fit dimension
     if (string_a.size() % submatrix_dim)
     {
         int cnt = submatrix_dim - string_a.size() % submatrix_dim;
@@ -76,7 +81,8 @@ Solver::Solver(string str_a, string str_b, string _alphabet,
 }
 
 /*
-    Calculates sequence alignments based on an edit path. Integers in the edit path:
+    Calculates sequence alignments based on an edit path.
+    Integers in the edit path represent:
     1 - moving down in the submatrix
     2 - moving right in the submatrix
     3 - moving diagonally in the submatrix
@@ -109,6 +115,14 @@ pair<string, string> Solver::calculate_alignment(vector<int> path)
     return make_pair(a_aligned, b_aligned);
 }
 
+/*
+    Backtracks through the submatrices until it reaches the
+    starting cell. Edit operations in the vector will be ordered backwards
+    and the integers represent:
+    1 - moving down in the submatrix
+    2 - moving right in the submatrix
+    3 - moving diagonally in the submatrix
+*/
 vector<int> Solver::get_edit_path()
 {
     pair<vector<int>, pair<pair<int, int>, pair<int, int> > > ret;
@@ -143,6 +157,11 @@ vector<int> Solver::get_edit_path()
         sub_y = ret.second.second.second;
     }
 
+    /*
+        Once we have reached the submatrix in the first row (or the first column)
+        of the full matrix, we may still need to move along the row (or column)
+        towards the starting cell in position 0, 0.
+    */
     if (x == 0) {
         for (int i = 0; i < (y-1)*submatrix_dim + sub_y; i++) {
             edit_path.push_back(2);
@@ -156,6 +175,11 @@ vector<int> Solver::get_edit_path()
     }
 }
 
+/*
+    Computes and returns the edit distance. This function will use less
+    memory than it's calculate_with_path() counterpart since it doesn't
+    need to backtrack for the edit path.
+*/
 int Solver::calculate()
 {
     fill_edit_matrix_low_memory();
@@ -171,6 +195,10 @@ int Solver::calculate()
     return edit_distance;
 }
 
+/*
+    Computes and returns the edit distance and sequence alignments. Use function
+    calculate() if sequence alignments are not needed as it is more memory efficient.
+*/
 pair<int, pair<string, string> > Solver::calculate_with_path()
 {
     fill_edit_matrix();
@@ -185,6 +213,11 @@ pair<int, pair<string, string> > Solver::calculate_with_path()
     return make_pair(edit_distance, calculate_alignment(get_edit_path()));
 }
 
+/*
+    Uses the precalculated submatrices from SubmatrixCalculator to determine
+    the values in the edit matrix. Keeps all the final rows and columns of
+    each submatrix in memory.
+*/
 void Solver::fill_edit_matrix()
 {
     all_columns.resize(row_num+1, vector<string>(column_num+1, ""));
@@ -252,6 +285,11 @@ void Solver::fill_edit_matrix()
     }
 }
 
+/*
+    Uses the precalculated submatrices from SubmatrixCalculator to determine
+    the values in the edit matrix. Only the two columns and rows that were
+    last retrieved are kept in memory.
+*/
 void Solver::fill_edit_matrix_low_memory()
 {
     for (int i = 0; i < 2; i++)
@@ -312,9 +350,9 @@ void Solver::fill_edit_matrix_low_memory()
 /*
 int main()
 {
-    //Solver solver("AC", "AC", "ATGC", 3);
-  //  int sol = solver.calculate();
-   // cout << "Edit distance: " << sol << endl;
+    Solver solver("AC", "AC", "ATGC", 2);
+    int sol = solver.calculate();
+    cout << "Edit distance: " << sol << endl;
 
     //pair<int, pair<string, string> > sol = solver.calculate_with_path();
     //cout << sol.first << endl << sol.second.first << endl << sol.second.second << endl;
