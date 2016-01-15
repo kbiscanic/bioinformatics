@@ -1,18 +1,18 @@
-	Command being timed: "./bin/bioinformatics test/data/test-5000.fa docs/testresults/test-basic-5000.maf"
-	User time (seconds): 0.78
-	System time (seconds): 0.00
-	Percent of CPU this job got: 98%
-	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:00.79
+	Command being timed: "./bin/bioinformatics b test/data/test-5000.fa docs/testresults/test-basic-5000.maf"
+	User time (seconds): 1.17
+	System time (seconds): 0.01
+	Percent of CPU this job got: 96%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:01.23
 	Average shared text size (kbytes): 0
 	Average unshared data size (kbytes): 0
 	Average stack size (kbytes): 0
 	Average total size (kbytes): 0
-	Maximum resident set size (kbytes): 1808
+	Maximum resident set size (kbytes): 1828
 	Average resident set size (kbytes): 0
 	Major (requiring I/O) page faults: 0
-	Minor (reclaiming a frame) page faults: 513
-	Voluntary context switches: 1
-	Involuntary context switches: 25
+	Minor (reclaiming a frame) page faults: 517
+	Voluntary context switches: 2
+	Involuntary context switches: 201
 	Swaps: 0
 	File system inputs: 0
 	File system outputs: 24
