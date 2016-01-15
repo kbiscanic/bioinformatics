@@ -1,6 +1,6 @@
 #include "Solver.hpp"
-#include "SubmatrixCalculator.hpp"
-#include "SubmatrixCalculator.cpp"
+//#include "SubmatrixCalculator.hpp"
+//#include "SubmatrixCalculator.cpp"
 
 /*
     Used to compute the edit distance and alignment between two strings
@@ -91,7 +91,6 @@ Solver::Solver(string str_a, string str_b, string _alphabet,
 */
 pair<string, string> Solver::calculate_alignment(vector<int> path)
 {
-    cout << "PATH SIZE " << path.size() << endl;
     string a_aligned;
     string b_aligned;
 
@@ -145,7 +144,6 @@ vector<int> Solver::get_edit_path()
 
     while (x != 0 && y != 0)
     {
-       // cout << "X Y " << x << " " << y << " ||| SUBX SUBY " << sub_x << " " << sub_y << endl;
         ret = subm_calc->getSubmatrixPath(string_a.substr((x-1)*submatrix_dim, submatrix_dim),
                                           string_b.substr((y-1)*submatrix_dim, submatrix_dim),
                                           all_columns[x][y-1], all_rows[x-1][y],
@@ -353,7 +351,7 @@ void Solver::fill_edit_matrix_low_memory()
         }
     }
 }
-
+/*
 int main()
 {
     Solver solver("ACCGGTTGCCCGCTACATGCTCCAACCATCCGGCGATGGTTACCTGCTGCCGGACTGGTATAGCGCAGAGCCGCGTCGACACCGCGTATCCGTGCCCCCC",
@@ -366,3 +364,4 @@ int main()
 
     return 0;
 }
+*/
