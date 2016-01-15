@@ -68,6 +68,8 @@ int main(int argc, char** argv) {
         Result* result = new Result(new Sequence(sequences[i]->getIdentifier()
          , res.second.first), new Sequence(sequences[j]->getIdentifier()
          , res.second.second), res.first);
+
+        results.push_back(result);
       }
     }
   }
