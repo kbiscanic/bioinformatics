@@ -12,9 +12,8 @@ using namespace std;
 
 class Solver {
  public:
-int collisionCount = 0;
   Solver(string str_a, string str_b, string _alphabet = "ATGC",
-         int _submatrix_dim = 0, int hashBase = 50077);
+         int _submatrix_dim = 0);
   pair<string, string> calculate_alignment(vector<int> edit_path);
   vector<int> get_edit_path();
   int calculate();

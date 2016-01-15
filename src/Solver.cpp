@@ -1,9 +1,7 @@
 #include "Solver.hpp"
-//#include "SubmatrixCalculator.hpp"
-//#include "SubmatrixCalculator.cpp"
 
 Solver::Solver(string str_a, string str_b, string _alphabet,
-               int _submatrix_dim, int hashBase = 50077)
+               int _submatrix_dim)
 {
 
     /*
@@ -73,11 +71,8 @@ Solver::Solver(string str_a, string str_b, string _alphabet,
     // generate all possible submatrices for the given alphabet and dimension
     this->subm_calc = new SubmatrixCalculator(this->submatrix_dim, this->alphabet,
             this->BLANK_CHAR);
-    //DEBUG
-    subm_calc->HASH_BASE = hashBase;
-    //DEBUG
+
     subm_calc->calculate();
-    collisionCount = subm_calc->collisionCount;
 }
 
 /*
@@ -315,21 +310,14 @@ void Solver::fill_edit_matrix_low_memory()
     }
 }
 /*
-//   50077  50087  50093  50101  50111  50119  50123  50129  50131  50147
 int main()
 {
-    vector<int> primes;
-    int prime = 0;
-    while(cin>>prime){
-        primes.push_back(prime);
-    }
+    Solver solver("AC", "AC", "ATGC", 2);
+    int sol = solver.calculate();
+    cout << "Edit distance: " << sol << endl;
 
-        Solver solver("AC", "AC", "ATGC", 2, 50077);
-        cout << "Collisions for " << 50077<< ": " << solver.collisionCount << endl;
-    //int sol = solver.calculate();
     //pair<int, pair<string, string> > sol = solver.calculate_with_path();
-    //cout << "Edit distance: " << sol << endl;
-    //cout << sol.second.first << endl << sol.second.second << endl;
+    //cout << sol.first << endl << sol.second.first << endl << sol.second.second << endl;
 
     return 0;
 }
