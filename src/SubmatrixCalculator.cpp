@@ -18,7 +18,10 @@ Four Russians algorithm.
 #include "SubmatrixCalculator.hpp"
 
 SubmatrixCalculator::SubmatrixCalculator() {}
-SubmatrixCalculator::~SubmatrixCalculator() {}
+SubmatrixCalculator::~SubmatrixCalculator() {
+     //if (this->dimension == 2)
+      //  delete this->resultIndex;
+}
 
 SubmatrixCalculator::SubmatrixCalculator(int _dimension, string _alphabet,
         char _blankCharacter, int _replaceCost,
@@ -32,11 +35,19 @@ SubmatrixCalculator::SubmatrixCalculator(int _dimension, string _alphabet,
 
     this->initialSteps.reserve(pow(3, _dimension));
     this->initialStrings.reserve(pow(_alphabet.size(), _dimension));
+
+    int startTime = clock();
+    //if (_dimension == 2)
+        //this->resultIndex = new pair<string, string>[this->submatrixCountLimit];
+    this->times[0] = (clock() - startTime) / double(CLOCKS_PER_SEC);
+    cout << "Allocation time: " << this->times[0] << "s" << endl;
 }
 
 void SubmatrixCalculator::calculate() {
-    printf("Clearing the submatrix data...\n");
-    results.clear();
+    //if (this->dimension != 2){
+        printf("Clearing the submatrix data...\n");
+        results.clear();
+    //}
 
     generateInitialSteps(0, "");
     generateInitialStrings(0, "", false);
@@ -60,12 +71,22 @@ void SubmatrixCalculator::calculate() {
                     key += initialStrings[strB];
                     key += initialSteps[stepC];
                     key += initialSteps[stepD];
+                    /*pair<string, string> tmp = resultIndex[hash(key)];
+                    if (tmp.first.size() > 0){
+                        collisionCount++;
+                    }*/
                     // storing the resulting final rows for future reference
+
+                    /*resultIndex[hash(key)] =
+                        calculateFinalSteps(initialStrings[strA], initialStrings[strB],
+                                            initialSteps[stepC], initialSteps[stepD]);*/
                     results[key] = calculateFinalSteps(initialStrings[strA], initialStrings[strB],
                         initialSteps[stepC], initialSteps[stepD]);
                 }
             }
         }
+        // cout << strA + 1 << " / " << initialStrings.size() << " (submatrices: "
+        // << results.size() << " )" << endl;
         if (strA % 5 == 0 or strA == initialStrings.size() - 1) {
             cout << strA + 1 << " / " << initialStrings.size() << " (submatrices: "
                  << (strA + 1) * initialStrings.size() * initialSteps.size() *
@@ -74,6 +95,7 @@ void SubmatrixCalculator::calculate() {
     }
     this->times[1] = (clock() - startTime) / double(CLOCKS_PER_SEC);
     cout << "Submatrix calculation time: " << this->times[1] << "s" << endl;
+    //cout << "Collisions occurred: " << collisionCount << endl;
 }
 
 /*
