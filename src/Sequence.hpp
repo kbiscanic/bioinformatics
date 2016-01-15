@@ -6,7 +6,8 @@
 using namespace std;
 
 /*
-Class representing a sequence of chromosome. Consists of sequence identifier and string representation.
+Class representing a sequence of chromosome. Consists of sequence identifier and
+string representation.
 */
 class Sequence {
  private:

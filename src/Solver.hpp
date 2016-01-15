@@ -34,8 +34,8 @@ class Solver {
   int string_a_real_size;
   int string_b_real_size;
 
-  vector<vector<string > > all_columns;
-  vector<vector<string > > all_rows;
+  vector<vector<string> > all_columns;
+  vector<vector<string> > all_rows;
 
   // value of the top left cell for each submatrix
   vector<vector<int> > top_left_costs;

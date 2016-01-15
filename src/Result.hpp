@@ -4,7 +4,8 @@
 #include "Sequence.hpp"
 
 /*
-Class representing a result of single sequence alignment. Consists of a score (edit distance) and aligned sequences.
+Class representing a result of single sequence alignment. Consists of a score
+(edit distance) and aligned sequences.
 */
 class Result {
  private:
@@ -17,11 +18,11 @@ class Result {
   Result(Sequence* a, Sequence* b, double score);
   ~Result();
 
-  //getter for score
+  // getter for score
   double getScore() const { return score_; }
-  //getter for first sequence
+  // getter for first sequence
   Sequence* getA() { return a_; }
-  //getter for second sequence
+  // getter for second sequence
   Sequence* getB() { return b_; }
 };
 

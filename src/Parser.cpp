@@ -2,7 +2,8 @@
 
 #include <iostream>
 
-// contructor for parser; takes string filename which should be full path to .fa file
+// contructor for parser; takes string filename which should be full path to .fa
+// file
 Parser::Parser(const char* filename) {
   Parser::in_.open(filename, ifstream::in);
 };

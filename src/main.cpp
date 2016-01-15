@@ -40,34 +40,33 @@ int main(int argc, char** argv) {
 
         int startTime = clock();
         int score = bed.getResult();
-        cout << "Edit distance calculation (Needleman-Wunsch): " <<
-          (clock() - startTime) / double(CLOCKS_PER_SEC) << endl;
+        cout << "Edit distance calculation (Needleman-Wunsch): "
+             << (clock() - startTime) / double(CLOCKS_PER_SEC) << endl;
 
-        Result* result =
-            new Result(sequences[i], sequences[j], score);
+        Result* result = new Result(sequences[i], sequences[j], score);
         results.push_back(result);
       } else if (algorithm == 'd') {
         Solver solver(sequences[i]->getData(), sequences[j]->getData());
 
         int startTime = clock();
         int score = solver.calculate();
-        cout << "Edit distance calculation (Masek-Paterson): " << 
-            (clock() - startTime) / double(CLOCKS_PER_SEC) << endl;
+        cout << "Edit distance calculation (Masek-Paterson): "
+             << (clock() - startTime) / double(CLOCKS_PER_SEC) << endl;
 
-        Result* result =
-            new Result(sequences[i], sequences[j], score);
+        Result* result = new Result(sequences[i], sequences[j], score);
         results.push_back(result);
       } else {
         Solver solver(sequences[i]->getData(), sequences[j]->getData());
 
         int startTime = clock();
-        pair<int,pair<string,string>> res = solver.calculate_with_path();
-        cout << "Edit path calculation (Masek-Paterson): " << 
-            (clock() - startTime) / double(CLOCKS_PER_SEC) << endl;
+        pair<int, pair<string, string>> res = solver.calculate_with_path();
+        cout << "Edit path calculation (Masek-Paterson): "
+             << (clock() - startTime) / double(CLOCKS_PER_SEC) << endl;
 
-        Result* result = new Result(new Sequence(sequences[i]->getIdentifier()
-         , res.second.first), new Sequence(sequences[j]->getIdentifier()
-         , res.second.second), res.first);
+        Result* result = new Result(
+            new Sequence(sequences[i]->getIdentifier(), res.second.first),
+            new Sequence(sequences[j]->getIdentifier(), res.second.second),
+            res.first);
 
         results.push_back(result);
       }

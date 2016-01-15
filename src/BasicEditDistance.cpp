@@ -66,9 +66,9 @@ void BasicEditDistance::calculate() {
           min(dp[!alt][j - 1] + cost[first[i - 1]][second[j - 1]],  // replace
               dp[!alt][j] + cost[first[i - 1]][EDIST_BLANK]),       // delete
           dp[alt][j - 1] + cost[EDIST_BLANK][second[i - 1]]);       // insert
-  //   cout << dp[alt][j] << " ";
+      //   cout << dp[alt][j] << " ";
     }
-//    cout << endl;
+    //    cout << endl;
   }
 
   result = dp[!alt][second.size()];

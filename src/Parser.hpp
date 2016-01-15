@@ -14,7 +14,8 @@ class Parser {
   ifstream in_;
 
  public:
-  // contructor for parser; takes string filename which should be full path to .fa file
+  // contructor for parser; takes string filename which should be full path to
+  // .fa file
   Parser(const char* filename);
   ~Parser();
 

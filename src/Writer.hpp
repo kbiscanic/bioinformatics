@@ -17,7 +17,8 @@ class Writer {
   ofstream out_;
 
  public:
-  // Constructor; take single argument filename which should be path to file. Overwrites existing file or creates a new one.
+  // Constructor; take single argument filename which should be path to file.
+  // Overwrites existing file or creates a new one.
   Writer(const char* filename);
   ~Writer();
 
