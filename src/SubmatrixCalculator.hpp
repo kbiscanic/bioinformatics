@@ -43,16 +43,17 @@ public:
         return accumulate(stepValues.begin(), stepValues.end(), 0);
     }
 
-    /*
-        Returns the precalculated final step vectors for a given initial submat$
-    */
+     /*		
+         Returns the precalculated final step vectors for a given initial submatrix description.		
+     */
     inline pair<string, string> getFinalSteps(string strLeft, string strTop,
             string stepLeft, string stepTop) {
         return results[hash(strLeft + strTop + stepLeft + stepTop)];
     }
 
-    /*  Transforms the step vector to a string. The string characters have no s$
-        strings are used for easier mapping. Check SubmatrixCalculator::stepsTo$
+    /*		
+        Transforms the step vector to a string. The string characters have no special meaning,		
+        strings are used for easier mapping. Check SubmatrixCalculator::stepsToVector comments.		
     */
     static string stepsToString(vector<int> steps) {
         string ret = "";
@@ -92,8 +93,8 @@ public:
     }
 
     /*
-        Transforms the string of steps (possibly a result of stepsToString()) t$
-        where each step value is expected to be in {-1, 0, 1}. I.e., the steps $
+        Transforms the string of steps (possibly a result of stepsToString()) to a vector of steps,	
+        where each step value is expected to be in {-1, 0, 1}. I.e., the steps string characters		 
         are expected to be in {'0', '1', '2'}.
     */
     static vector<int> stepsToVector(string steps) {
