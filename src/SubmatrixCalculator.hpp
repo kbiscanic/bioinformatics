@@ -15,6 +15,8 @@ using namespace std;
 
 class SubmatrixCalculator {
 public:
+    int collisionCount = 0;
+
     SubmatrixCalculator();
     SubmatrixCalculator(int _dimension, string _alphabet = "ATGC",
                         char _blankCharacter = '-', int _replaceCost = 2,
@@ -48,11 +50,11 @@ public:
     */
     inline pair<string, string> getFinalSteps(string strLeft, string strTop,
             string stepLeft, string stepTop) {
-        //return results[strLeft + strTop + stepLeft + stepTop];
-        return resultIndex[hash(strLeft + strTop + stepLeft + stepTop)];
+        return results[strLeft + strTop + stepLeft + stepTop];
+       // return resultIndex[hash(strLeft + strTop + stepLeft + stepTop)];
     }
 
-    const long long HASH_BASE = 13337;
+    int HASH_BASE = 50077;
     inline long long hash(string x) {
         long long ret = 0;
         for (unsigned int i = 0; i < x.size(); i++) {
@@ -114,8 +116,7 @@ private:
     // the actual maximum number of submatrices should be much lower
     // in order to decrease the possibility of hash collisions
     // when storing results
-    const long long submatrixCountLimit =
-        15485863;  // prime (coprime with hash base)
+    const long long submatrixCountLimit = 1297727;  // prime (coprime with hash base)
     string alphabet;
     char blankCharacter;
     vector<string> initialSteps;
