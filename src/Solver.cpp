@@ -3,7 +3,7 @@
 //#include "SubmatrixCalculator.cpp"
 
 Solver::Solver(string str_a, string str_b, string _alphabet,
-               int _submatrix_dim, int hashBase = 50077)
+               int _submatrix_dim, int hashBase)
 {
 
     /*
