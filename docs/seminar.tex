@@ -4,7 +4,7 @@
 \begin{document}
 
 % TODO: Navedite naslov rada.
-\title{Fast string alignment calculation}
+\title{Fast sequence alignment}
 
 % TODO: Navedite vaše ime i prezime.
 \author{Kristijan Biščanić \\ Luka Hrabar \\ Ela Marušić}
@@ -23,15 +23,54 @@ Sequence alignment is a process of arranging the symbolic representations of DNA
 \chapter{Algorithm}
 
 \chapter{Test results}
+Our algorithm was tested on synthetic sequences. Pairs of sequence reads were simulated using wgsim tool from reference chromosome of Escherichia coli bacteria, and then converted into FASTA file format which is used as an input file format. Output file format of our program was MAF (\textit{Multiple Alignment Format}) containing score, which is equal to string edit distance, and sequence alignment for algorithms that support it. 
+
+Pairs of sequence reads were generated with lengths of 100, 200, 500, 1 000, 5 000, 10 000, 50 000, 100 000, 500 000 and 1 000 000 characters. Every pair was then tested on our algorithm, as well as Needleman-Wunsch algorithm for reference. Every test was timed and maximal memory usage was observed for each of the algorithms. Needleman-Wunsch algorithm was tested on sequences up to 100 000 characters because of its large time complexity. Both algorithms were tested in same conditions on the same computer running inside Bio-Linux-8 virtual machine with access to 2 CPU cores and 2GB RAM.
+\begin{table}[h]
+\centering
+\begin{tabular}{rccc}
+$N$ & Needleman-Wunsch & Masek-Paterson & Masek-Paterson (alignment)\\
+\hline
+$      100 $&$ 0.483$ ms&$ 2s$ \\
+$      200 $&$ 1.633$ ms&$ 2s $ \\
+$      500 $&$ 7.954$ ms&$ 2s $\\
+$    1 000 $&$ 44.34$ ms&$ 2s $\\
+$    5 000 $&$ 847.7$ ms&$ 2s $\\
+$   10 000 $&$ 3.253$ s&$ 2s $\\
+$   50 000 $&$ 79.94$ s&$ 2s $\\
+$  100 000 $&$ 331.6$ s&$ 2s $\\
+$  500 000 $&$ 2 - 3$ h \footnotemark &$ 2s $\\
+$1 000 000 $&$ 8 - 10$ h \footnotemark[\value{footnote}] &$ 2s $\\
+\end{tabular}
+\caption{Time comparison}
+\end{table}
+\begin{table}[h]
+\centering
+\begin{tabular}{rccc}
+$N$ & Needleman-Wunsch & Masek-Paterson & Masek-Paterson (alignment) \\
+\hline
+$      100 $&$ 1756$ KB &$ 2s$ \\
+$      200 $&$ 1756$ KB&$ 2s $ \\
+$      500 $&$ 1768$ KB&$ 2s $\\
+$    1 000 $&$ 1772$ KB&$ 2s $\\
+$    5 000 $&$ 1836$ KB&$ 2s $\\
+$   10 000 $&$ 1924$ KB&$ 2s $\\
+$   50 000 $&$ 2464$ KB&$ 2s $\\
+$  100 000 $&$ 3188$ KB&$ 2s $\\
+$  500 000 $&$ 2 - 3h \footnotemark[\value{footnote}] $&$ 2s $\\
+$1 000 000 $&$ 9 - 10h \footnotemark[\value{footnote}] $&$ 2s $\\
+\end{tabular}
+\caption{Maximal memory consumption comparison}
+\end{table}
+\footnotetext{estimated}
 
 \chapter{Conclusion}
-Zaključak.
+We've presented an implementation of fast string alignment as described in \cite{masek1980faster}. Using the Four Russians algorithm combined with the proposed edit matrix reduction system we've achieved a significant improvement over the quadratic string alignment algorithm. In terms of time complexity, our implementation is faster by a factor of $log_{3\sigma}(N)$ where $\sigma$ denotes the alphabet size. When discussing space complexity, we use less memory (by the same factor) but the required memory is still a bottleneck when dealing with long strings. Nevertheless, an improvement is visible - we can calculate the edit script for strings up to a million length if provided with a supercomputer, and that was not the case for the quadratic algorithm.
+
+The method we explored leaves barely any room for space complexity optimization. With that in mind, the next potential improvement would be to research and implement a more memory-efficient idea, for example \cite{kundeti2008extending}.
 
 \bibliography{literatura}
 \bibliographystyle{fer}
-
-\chapter{Abstract}
-Sažetak.
 
 \nocite{*}
 \end{document}
