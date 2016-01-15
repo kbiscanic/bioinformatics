@@ -1,4 +1,6 @@
 #include "Solver.hpp"
+#include "SubmatrixCalculator.hpp"
+#include "SubmatrixCalculator.cpp"
 
 /*
     Used to compute the edit distance and alignment between two strings
@@ -89,6 +91,7 @@ Solver::Solver(string str_a, string str_b, string _alphabet,
 */
 pair<string, string> Solver::calculate_alignment(vector<int> path)
 {
+    cout << "PATH SIZE " << path.size() << endl;
     string a_aligned;
     string b_aligned;
 
@@ -142,6 +145,7 @@ vector<int> Solver::get_edit_path()
 
     while (x != 0 && y != 0)
     {
+       // cout << "X Y " << x << " " << y << " ||| SUBX SUBY " << sub_x << " " << sub_y << endl;
         ret = subm_calc->getSubmatrixPath(string_a.substr((x-1)*submatrix_dim, submatrix_dim),
                                           string_b.substr((y-1)*submatrix_dim, submatrix_dim),
                                           all_columns[x][y-1], all_rows[x-1][y],
@@ -173,6 +177,8 @@ vector<int> Solver::get_edit_path()
             edit_path.push_back(1);
         }
     }
+
+    return edit_path;
 }
 
 /*
@@ -347,16 +353,16 @@ void Solver::fill_edit_matrix_low_memory()
         }
     }
 }
-/*
+
 int main()
 {
-    Solver solver("AC", "AC", "ATGC", 2);
-    int sol = solver.calculate();
-    cout << "Edit distance: " << sol << endl;
+    Solver solver("ACCGGTTGCCCGCTACATGCTCCAACCATCCGGCGATGGTTACCTGCTGCCGGACTGGTATAGCGCAGAGCCGCGTCGACACCGCGTATCCGTGCCCCCC",
+                  "TGGGGATTGCCAGTCCGTCCGGGGAGGTATTCAGAAAGGTACACCGGTCTGTTGATATTCATGTAACAGGTATTAATGATGAAGAAAGGAATGGCAAACA", "ATGC");
+    //int sol = solver.calculate();
+    //cout << "Edit distance: " << sol << endl;
 
-    //pair<int, pair<string, string> > sol = solver.calculate_with_path();
-    //cout << sol.first << endl << sol.second.first << endl << sol.second.second << endl;
+    pair<int, pair<string, string> > sol = solver.calculate_with_path();
+    cout << sol.first << endl << sol.second.first << endl << sol.second.second << endl;
 
     return 0;
 }
-*/
