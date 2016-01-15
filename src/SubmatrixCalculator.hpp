@@ -48,7 +48,7 @@ public:
     */
     inline pair<string, string> getFinalSteps(string strLeft, string strTop,
             string stepLeft, string stepTop) {
-        return results[strLeft + strTop + stepLeft + stepTop];
+        return results[hash(strLeft + strTop + stepLeft + stepTop)];
     }
 
     /*  Transforms the step vector to a string. The string characters have no s$
@@ -81,6 +81,16 @@ public:
         return ret;
     }
 
+    int HASH_BASE = 50077;
+    inline long long hash(string x) {
+        long long ret = 0;
+        for (unsigned int i = 0; i < x.size(); i++) {
+            ret = (ret * HASH_BASE + x[i]);
+        }
+        //ret &= this->submatrixCountLimit - 1;  // fancy bit-work
+        return ret;
+    }
+
     /*
         Transforms the string of steps (possibly a result of stepsToString()) t$
         where each step value is expected to be in {-1, 0, 1}. I.e., the steps $
@@ -108,7 +118,7 @@ private:
     vector<string> initialSteps;
     vector<string> initialStrings;
     vector<vector<int> > lastSubH, lastSubV;
-    map<string, pair<string, string> > results;
+    map<long long, pair<string, string> > results;
     double times[2];  // allocation time, matrix calculation time
 };
 #endif

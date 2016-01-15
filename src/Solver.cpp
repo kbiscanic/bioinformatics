@@ -312,9 +312,9 @@ void Solver::fill_edit_matrix_low_memory()
 /*
 int main()
 {
-    Solver solver("AC", "AC", "ATGC", 2);
-    int sol = solver.calculate();
-    cout << "Edit distance: " << sol << endl;
+    //Solver solver("AC", "AC", "ATGC", 3);
+  //  int sol = solver.calculate();
+   // cout << "Edit distance: " << sol << endl;
 
     //pair<int, pair<string, string> > sol = solver.calculate_with_path();
     //cout << sol.first << endl << sol.second.first << endl << sol.second.second << endl;

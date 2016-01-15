@@ -52,6 +52,7 @@ void SubmatrixCalculator::calculate() {
 
     // all possible initial steps and strings combinations
     int startTime = clock();
+    int collisions = 0;
     for (int strA = 0; strA < initialStrings.size(); strA++) {
         for (int strB = 0; strB < initialStrings.size(); strB++) {
             for (int stepC = 0; stepC < initialSteps.size(); stepC++) {
@@ -61,7 +62,10 @@ void SubmatrixCalculator::calculate() {
                     key += initialSteps[stepC];
                     key += initialSteps[stepD];
                     // storing the resulting final rows for future reference
-                    results[key] = calculateFinalSteps(initialStrings[strA], initialStrings[strB],
+                    //DEBUG pair<string, string> temp = results[hash(key)];
+                    //DEBUG if (temp.first.size() > 0)
+                    //DEBUG    collisions++;
+                    results[hash(key)] = calculateFinalSteps(initialStrings[strA], initialStrings[strB],
                         initialSteps[stepC], initialSteps[stepD]);
                 }
             }
@@ -72,6 +76,7 @@ void SubmatrixCalculator::calculate() {
                  initialSteps.size() << " )" << endl;
         }
     }
+    //cout <<"Collisions "<< collisions <<endl;
     this->times[1] = (clock() - startTime) / double(CLOCKS_PER_SEC);
     cout << "Submatrix calculation time: " << this->times[1] << "s" << endl;
 }
