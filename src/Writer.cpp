@@ -2,10 +2,13 @@
 
 using namespace std;
 
+// Constructor; take single argument filename which should be path to file. Overwrites existing file or creates a new one.
 Writer::Writer(const char* filename) { out_.open(filename, ofstream::out); };
 
+// destructor; close output stream on destruction
 Writer::~Writer() { out_.close(); }
 
+// converts a single sequence to 's' line of MAF format
 const string toStr(Sequence* seq) {
   ostringstream out;
   string data = seq->getData();
@@ -15,6 +18,7 @@ const string toStr(Sequence* seq) {
   return out.str();
 }
 
+// method for writing vector of results to output file; creates an alignemnt block for every result in vector
 void Writer::writeResults(vector<Result*> results) {
   for (Result* result : results) {
     Writer::out_ << "a score=" << result->getScore() << endl;

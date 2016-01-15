@@ -9,6 +9,9 @@ using namespace std;
 
 static const int MAX_SEQ_LENGTH = 1000000;
 
+/* Main program
+ Usage: <algorithm>  <input file.fa> <output file.maf>
+*/
 int main(int argc, char** argv) {
   if (argc != 4) {
     cout << "Usage: " << argv[0]

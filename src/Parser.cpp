@@ -2,12 +2,15 @@
 
 #include <iostream>
 
+// contructor for parser; takes string filename which should be full path to .fa file
 Parser::Parser(const char* filename) {
   Parser::in_.open(filename, ifstream::in);
 };
 
+// destructor, close input stream on destruction
 Parser::~Parser() { in_.close(); }
 
+// reads sequences from file and returns them in a vector
 const vector<Sequence*> Parser::readSequences() {
   vector<Sequence*> sequences;
 
