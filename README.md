@@ -1,7 +1,7 @@
-# Fast string alignment calculation
+# Fast sequence alignment
 [![Build Status](https://travis-ci.org/kbiscanic/bioinformatics.svg?branch=master)](https://travis-ci.org/kbiscanic/bioinformatics)
 
-Implementation of faster algorithm for computing string edit distances and calculation of string alignment.
+Implementation of faster algorithm for computing string edit distances and sequence alignment.
 
 http://www.sciencedirect.com/science/article/pii/0022000080900021
 
