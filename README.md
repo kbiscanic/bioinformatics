@@ -7,19 +7,17 @@ http://www.sciencedirect.com/science/article/pii/0022000080900021
 
 Installation
 ------------
-```
-make
-```
+    make
 
 Usage
 -----
-`./bin/bioinformatics b|d|a <input_file.fa> <output_file.maf>`
+    ./bin/bioinformatics b|d|a <input_file.fa> <output_file.maf>
 
-`b - `**`b`**`asic edit distance (Needleman-Wunsch)`
+> b - **b**asic edit distance (Needleman-Wunsch)
 
-`d - edit `**`d`**`istance (Masek-Paterson)`
+> d - edit **d**istance (Masek-Paterson)
 
-`a - edit distance and `**`a`**`lignment (Masek-Paterson)`
+> a - edit distance and **a**lignment (Masek-Paterson)
 
 Course information
 ------------------
