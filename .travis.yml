@@ -15,10 +15,9 @@ addons:
     - gcc-4.8
     - g++-4.8
     - clang
+    - time
 
 script:
   - make clean
   - make
-  - ./bin/bioinformatics d test/data/test-500000.fa testd.maf && cat testd.maf
-  - ./bin/bioinformatics d test/data/test-1000000.fa testd.maf && cat testd.maf
-
+  - /usr/bin/time -v ./bin/bioinformatics a test/data/test-100.fa testd.maf && cat testd.maf
