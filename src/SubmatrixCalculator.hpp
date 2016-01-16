@@ -44,8 +44,9 @@ public:
     }
 
     /*
-        Returns the precalculated final step vectors for a given initial submatrix
+       Returns the precalculated final step vectors for a given initial submatrix
        description.
+       Unused to reduce function overhead.
     */
    /* inline pair<string, string> getFinalSteps(string strLeft, string strTop,
             string stepLeft, string stepTop) {
@@ -67,24 +68,14 @@ public:
         return ret;
     }
 
-    vector<int> stepsToVector(int steps){
-        vector<int> rev;
-        for (int i = 0; i < this->dimension; i++){
-            rev.push_back(steps % 10 - 1);
-            steps /= 10;
-        }
-
-        vector<int> ret;
-        for (int i = rev.size() - 1; i >= 0; i--){
-            ret.push_back(rev[i]);
-        }
-        return ret;
-    }
-
+    /*
+        Returns the total memory offset for the matrix represented by the four
+        provided parameters (initial step vectors and initial strings).
+    */
     inline int getOffset(string strLeft, string strTop, string stepLeft, string stepTop) {
         int offset = 0;
 
-        for (unsigned int i = 0; i < this->dimension; i++) {
+        for (int i = 0; i < this->dimension; i++) {
             offset += charLeftOffset[this->dimension - i - 1][alphabetMap[strLeft[i]]];
             offset += charTopOffset[this->dimension - i - 1][alphabetMap[strTop[i]]];
             offset += stepLeftOffset[this->dimension - i - 1][stepLeft[i] - '0'];
@@ -94,8 +85,12 @@ public:
         return offset;
     }
 
+    /*
+        Precalculates some offsets for step and string indexing. Saves time
+        during any bottleneck involving submatrix retrieval / storage.
+    */
     void calculateOffsets() {
-        // calculate the memory offsets for submatrix storage
+        // calculate the memory offsets for submatrix storage for each individual symbol
         int temp_offset = 1;
         for (int i = 0; i < this->dimension; i++) {
             for (int j = 0; j < 3; j++) {
@@ -186,6 +181,10 @@ public:
         */
     }
 
+    /*
+        Sums the step values encoded in stepsNumeric to get the
+        total difference over that step vector.
+    */
     int sumSteps(int stepsNumeric){
         int sum = 0;
         for (int i = 0; i < this->dimension; i++){
@@ -195,10 +194,31 @@ public:
         return sum;
     }
 
+    /*
+        Transforms a vector of steps to a single integer. Used for
+        addressing using steps as indices.
+    */
     static int stepsToInt(vector<int> steps){
         int ret = 0;
         for (unsigned int i = 0; i < steps.size(); i++){
             ret = ret * 10 + steps[i] + 1;
+        }
+        return ret;
+    }
+
+    /*
+        Transforms the steps encoded as an integer to a vector of step values.
+    */
+    vector<int> stepsToVector(int steps){
+        vector<int> rev;
+        for (int i = 0; i < this->dimension; i++){
+            rev.push_back(steps % 10 - 1);
+            steps /= 10;
+        }
+
+        vector<int> ret;
+        for (int i = rev.size() - 1; i >= 0; i--){
+            ret.push_back(rev[i]);
         }
         return ret;
     }

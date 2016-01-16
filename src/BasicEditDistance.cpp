@@ -47,17 +47,17 @@ void BasicEditDistance::calculate() {
   // insertion cost partial sums (when we have extra characters in the target
   // string
   for (unsigned int i = 1; i <= second.size(); i++) {
-    dp[0][i] = dp[0][i - 1] + cost[EDIST_BLANK][second[i - 1]];
+    dp[0][i] = dp[0][i - 1] + cost[EDIST_BLANK][int(second[i - 1])];
   }
 
   int alt = 1;  // alternating the rows uses O(m) instead of O(n*m) memory
   for (unsigned int i = 1; i <= first.size(); i++, alt = !alt) {
-    dp[alt][0] = cost[first[i - 1]][EDIST_BLANK] + dp[!alt][0];
+    dp[alt][0] = cost[int(first[i - 1])][EDIST_BLANK] + dp[!alt][0];
     for (unsigned int j = 1; j <= second.size(); j++) {
       dp[alt][j] = min(
-          min(dp[!alt][j - 1] + cost[first[i - 1]][second[j - 1]],  // replace
-              dp[!alt][j] + cost[first[i - 1]][EDIST_BLANK]),       // delete
-          dp[alt][j - 1] + cost[EDIST_BLANK][second[i - 1]]);       // insert
+          min(dp[!alt][j - 1] + cost[int(first[i - 1])][second[j - 1]],  // replace
+              dp[!alt][j] + cost[int(first[i - 1])][EDIST_BLANK]),       // delete
+          dp[alt][j - 1] + cost[EDIST_BLANK][int(second[i - 1])]);       // insert
     }
   }
 

@@ -266,6 +266,12 @@ pair<int, int> SubmatrixCalculator::calculateFinalSteps(string strLeft,
   return make_pair(stepsToInt(stepRight), stepsToInt(stepBot));
 }
 
+/*
+    Generates all possible initial step vectors and stores them
+    into initialSteps. The arguments are recursion parameters,
+    call with (0, ""). The length of the generated step vectors depends
+    on the dimension of the submatrices.
+*/
 void SubmatrixCalculator::generateInitialSteps(int pos, string currStep) {
   if (pos == this->dimension) {
     initialSteps.push_back(currStep);
@@ -278,7 +284,12 @@ void SubmatrixCalculator::generateInitialSteps(int pos, string currStep) {
     generateInitialSteps(pos + 1, tmp);
   }
 }
-
+/*
+    Generates all possible string vectors and stores them
+    into initialStrings. The arguments are recursion parameters,
+    call with (0, "", 0). The length of the generated strings depends
+    on the dimension of the submatrices.
+*/
 void SubmatrixCalculator::generateInitialStrings(int pos, string currString,
                                                  bool blanks) {
   if (pos == this->dimension) {
