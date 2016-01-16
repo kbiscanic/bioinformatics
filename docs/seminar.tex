@@ -6,7 +6,7 @@
 \begin{document}
 
 % TODO: Navedite naslov rada.
-\title{Fast sequence alignment}
+\title{Fast edit distance and sequence alignment}
 
 % TODO: Navedite vaše ime i prezime.
 \author{Kristijan Biščanić \\ Luka Hrabar \\ Ela Marušić}
@@ -16,15 +16,23 @@
 \tableofcontents
 
 \chapter{Introduction}
-This project will implement, test and analyse a faster algorithm for computing string edit distances and sequence alignment. This algorithm was published by Masek and Paterson \cite{masek1980faster} and is inspired by the Four Russians Algorithm. Implemented algorithm will be compared to and tested against Needleman-Wunsch algorithm \cite{needleman1970general}, which is based on dynamic programming.
+The string edit distance is defined as the minimal cost to transform one character string into the other. The operations allowed to achieve this transformation are:
+\begin{itemize}
+\item delete - a character is deleted from the first string, from any location
+\item insert - a character is inserted into the second string, at any location
+\item replace - a character in the first string is replaced with some other character
+\end{itemize}
+Each of these operations has some, usually integer, cost.
 
-The \textit{string edit distance} is defined as the minimal cost of transforming one character string into the other. Operations allowed in those transformations are only insertion, deletion and replacing of one character, each of these having defined some cost. \textit{Edit Script} is defined as the actual sequence of operations used to transform one string into the other. There are many algorithms that are using string edit distances and edit scripts for further calculations, and they are used extensively in bioinformatics for sequence alignment.
+The edit script is defined as the actual sequence of operations used to transform one string into the other, with the sum of operation costs equal to the edit distance. These topics are extensively researched in many areas of computer science and our work uses them in the context of bioinformatics.
 
 Sequence alignment is a process of arranging the symbolic representations of DNA, RNA or protein sequences so that their most similar elements are juxtaposed. Such alignment is useful to identify regions of similarity and many bioinformatics tasks depend upon successful alignments.
 
+We have implemented, tested and analyzed a faster algorithm for computing string edit distances and sequence alignments. This algorithm was published by Masek and Paterson \cite{masek1980faster} and is inspired by the Four Russians Algorithm. Implemented algorithm will be compared to and tested against Fischer-Wagner algorithm \cite{needleman1970general}, which is based on dynamic programming.
+
 \chapter{Algorithm}
 \section{The basic algorithm}
-Dynamic programming problems can, most often than not, be reduced to a matrix of solutions to subproblems where the value of a cell ($i$, $j$) depends only on the cells with coordinates ($u\leq i$, $v\leq j$). This is the case with the edit distance and string alignment problems. An example is shown in table \ref{tab:a}, with the final solution in cell ($N$, $M$).
+Dynamic programming problems can, more often than not, be reduced to a matrix of solutions to subproblems where the value of a cell ($i$, $j$) depends only on the cells with coordinates ($u\leq i$, $v\leq j$). This is the case with edit distance and sequence alignment problems. An example is shown in table \ref{tab:a}, with the final solution in cell ($N$, $M$).
 \begin{table}[H]
 \centering
 \begin{tabular}{c|ccccc}
@@ -57,7 +65,7 @@ where $R$, $I$, $D$ are the costs of the (matrix movement) operations described 
 Due to the fact that each value can be computed in $O(1)$ time in the presented manner, both the time and space complexities of this matrix calculation equal $O(N \times M)$, where $N$ and $M$ denote the length of the strings.
 
 \section{The basic algorithm with optimized space complexity}
-Lets say we traverse and fill the matrix from earlier in a row-major fashion. If we take a closer look we'll notice that the values from row $i$ depend only on the values from the previous row, $i-1$, and on the values we've already calculated in this row. Therefore, we can forget the values from row $i-2$ and earlier, effectively reducing the memory required for the algorithm to two arrays of length equal to the number of columns. In other terms, the space complexity is reduced to $O(min(N, M))$ if we set the determine the number of columns using the shorter of the two strings in question.
+Lets say we traverse and fill the matrix from earlier in a row-major fashion. If we take a closer look we'll notice that the values from row $i$ depend only on the values from the previous row, $i-1$, and on the values we've already calculated in this row. Therefore, we can forget the values from row $i-2$ and earlier, effectively reducing the memory required for the algorithm to two arrays of length equal to the number of columns. In other terms, the space complexity is reduced to $O(min(N, M))$ if we set the number of columns using the shorter of the two strings in question.
 
 \section{The Four Russians method}
 We know that a problem matrix is represented using two strings and two initial vectors of values as shown earlier. In fact, every subproblem of our problem is represented using such strings and vectors:
@@ -65,15 +73,15 @@ We know that a problem matrix is represented using two strings and two initial v
 \begin{figure}[H]
 \centering
 \includegraphics[scale=.25]{s1}
-\caption{Submatrices}\label{pic:s1}
+\caption{Submatrices - the bolded submatrix is completely defined by the strings s1, s2 and two vectors of initial values in its first row and first column}\label{pic:s1}
 \end{figure}
 
-If we split the matrix into smaller submatrices (\ref{pic:s1}) and precalculate the solutions of these subproblems we can combine them to solve the large matrix. This is possible because the final vectors of some submatrix are the initial vectors of some other submatrices as seen in (\ref{pic:s1}). The final solution is yet again in the bottom-right cell of the large matrix.
+If we split the matrix into smaller submatrices (\ref{pic:s1}) and precalculate the solutions to these subproblems we can combine them to solve the large matrix. This is possible because the final vectors of some submatrix are the initial vectors of some other submatrices as seen in (\ref{pic:s1}). The final solution is yet again in the bottom-right cell of the large matrix.
 
 The space and time complexities using this technique would be reduced to \\
 $O(min(N, M) / t)$ and $O(N * M / t^2)$, respectively. The $t$ denotes the dimension of the submatrices used. But, in order for it to work, we need to precalculate every submatrix that might occur in our problem.
 
-\section{Precalculating the submatrices}
+\section{Enumerating the submatrices}
 The number of initial submatrix setup combinations is determined using the following expression:
 \begin{equation}
   combinations = |\sigma|^2t \cdot |\lambda|^2t
@@ -81,7 +89,7 @@ The number of initial submatrix setup combinations is determined using the follo
 The expression is derived from the fact that every subproblem is determined using two initial vectors of costs and two strings. $|\sigma|$ denotes the size of the alphabet used for the strings, $t$ represents the submatrix dimension, and $|\lambda|$ is the size of the set that contains every value that can occur in the initial vectors.
 
 \section{The step observation}
-The set of possible values from earlier can obviously be pretty large and we need to find a way to reduce the number of precalculations. Fortunately, we have the following observation - the values in these initial vectors, i.e. the values in general, tend to increase as we move towards the bottom-right corner of the matrix.
+The set of possible values from earlier can obviously be pretty large and we need to find a way to reduce the number of precalculations. Fortunately, we can make the following observation - the values in these initial vectors, i.e. the values in general, tend to increase as we move towards the bottom-right corner of the matrix.
 
 Before we continue, we will fix the operation costs as follows, in the context of string alignment:
 \begin{itemize}
@@ -99,14 +107,14 @@ The next step is to code all matrix values using these differences. We have two 
 \delta_{i,j} - \delta_{i,j-1} = min\{R_{i,j} - (\delta_{i,j-1}-\delta_{i-1,j-1}), D + (\delta_{i-1,j} - \delta_{i-1, j-1}), I\}
 \end{equation}
 
-$D$ and $I$ are the the costs of deletion and insertion, which are $1$ in our case. $R_{i,j}$ denotes the cost of replacing the $i$-th character of the first string with the $j$-th character of the second and is equal to $0$ if the two characters match ($2$ otherwise).
+$D$ and $I$ are the costs of deletion and insertion, in other words matrix "movement", which are $1$ in our case. $R_{i,j}$ denotes the cost of replacing the $i$-th character of the first string with the $j$-th character of the second and is equal to $0$ if the two characters match ($2$ otherwise).
 
 We are now able to reduce the number of submatrices we have to precalculate using vectors of steps, one horizontal and one vertical, instead of vectors of matrix values to:
 \begin{equation}
 combinations = |\sigma|^2t \cdot 3^2t
 \end{equation}
 
-To save space we will be storing only the final vectors for each submatrix, mapped to the initial vector and string combination. The time complexity to calculate a single submatrix's final step vectors is $O(t^2)$.
+To save space we will be storing only the final vectors for each submatrix, mapped to the initial vector and string combination for that submatrix. The time complexity to calculate a single submatrix's final step vectors is $O(t^2)$ because we have to traverse the entire submatrix.
 
 \section{Combining everything}
 Once we have computed all the possible submatrices, we can use them to generate the edit matrix of steps. More precisely, since we have two types of steps (those moving horizontally and those moving vertically), we will be generating two edit matrices of steps.
@@ -193,15 +201,15 @@ The edit distance is the sum of steps along some path from the top left cell to 
 If we set the submatrix dimension as $t = log_{3|\sigma|}N$, the total time complexity is equal to:
 \begin{itemize}
 \item $O(N \cdot log_{3|\sigma|}^2N)$ for submatrix precalculation
-\item $O(N^2 / log_{3|\sigma|}N)$ for submatrix combination
+\item $O(N^2 / log_{3|\sigma|}^2N)$ for submatrix combination
 \end{itemize}
 
-The second complexity assumes the submatrices are stored in some tree-like fashion and it takes $O(log_{3|\sigma|}N)$ time to retrieve a submatrix. If submatrices were to be indexed (e.g. with a perfect hashing algorithm) and stored in an array the complexity would be reduced by a factor of $log_{3|\sigma|}N$. For more details see \citep{gusfield1997algorithms}.
+The second complexity assumes the submatrices are stored in such a fashion that they can be retrieved in constant time. This is possible because the total number of possible submatrices can be precomputed easily so we can allocate enough space. For more details on the matrix indexing see the implementation. For more details on the complexities involved see \citep{gusfield1997algorithms}.
 
 \chapter{Test results}
-Our algorithm was tested on synthetic sequences. Pairs of sequence reads were simulated using wgsim tool from reference chromosome of Escherichia coli bacteria, and then converted into FASTA file format which is used as an input file format. Output file format of our program was MAF (\textit{Multiple Alignment Format}) containing score, which is equal to string edit distance, and sequence alignment for algorithms that support it. 
+Our algorithm was tested on synthetic sequences. Pairs of sequence reads were simulated using the wgsim tool from a reference chromosome of Escherichia coli bacteria, and then converted into the FASTA file format which is used as an input file format. The output file format of our program was MAF (\textit{Multiple Alignment Format}) containing score, which is equal to string edit distance, and sequence alignment for algorithms that support it. 
 
-Pairs of sequence reads were generated with lengths of 100, 200, 500, 1 000, 5 000, 10 000, 50 000, 100 000, 500 000 and 1 000 000 characters. Every pair was then tested on our algorithm, as well as Fischer-Wagner algorithm for reference. Every test was timed and maximal memory usage was observed for each of the algorithms. Fischer-Wagner algorithm was tested on sequences up to 100 000 characters because of its large time complexity. Both algorithms were tested in same conditions on the same computer running inside Bio-Linux-8 virtual machine with access to 2 CPU cores and 3GB RAM.
+Pairs of sequence reads were generated with lengths of 100, 200, 500, 1 000, 5 000, 10 000, 50 000, 100 000, 500 000 and 1 000 000 characters. Every pair was then tested on our algorithm, as well as the Fischer-Wagner algorithm for reference. Every test was timed and the maximal memory usage was observed for each of the algorithms. Fischer-Wagner algorithm was tested on sequences up to 100 000 characters because of its large time complexity. Both algorithms were tested in the same conditions on the same computer running inside a Bio-Linux-8 virtual machine with access to 2 CPU cores and 3GB RAM.
 \begin{table}[h]
 \centering
 \begin{tabular}{rccc}
@@ -242,7 +250,7 @@ $1 000 000 $&$ -$\footnotemark[1]&$ 392.8$ MB&$ - $\footnotemark[2]\\
 \footnotetext[2]{too much memory required for execution}
 
 \chapter{Conclusion}
-We've presented an implementation of fast string alignment as described in \cite{masek1980faster}. Using the Four Russians algorithm combined with the proposed edit matrix reduction system we've achieved a significant improvement over the quadratic string alignment algorithm. In terms of time complexity, our implementation is faster by a factor of $log_{3|\sigma|}(N)$ where $|\sigma|$ denotes the alphabet size. When discussing space complexity, we use less memory (by the same factor) but the required memory is still a bottleneck when dealing with long strings. Nevertheless, an improvement is visible - we can calculate the edit script for strings up to a million length if provided with a supercomputer, and that was not the case for the quadratic algorithm.
+We've presented an implementation of fast string alignment as described in \cite{masek1980faster}. Using the Four Russians algorithm combined with the proposed edit matrix reduction system we've achieved a significant improvement over the quadratic edit distance algorithm of Fischer-Wagner. In terms of time complexity, our implementation is faster by a factor of $log^2_{3|\sigma|}(N)$ where $|\sigma|$ denotes the alphabet size. When discussing space complexity, we use less memory (by the same factor) but the required memory is still a bottleneck when dealing with long strings. If we wanted to calculate the string alignment for strings up to a million characters in length we'd still need a small supercomputer.
 
 The method we explored leaves barely any room for space complexity optimization. With that in mind, the next potential improvement would be to research and implement a more memory-efficient idea, for example \cite{kundeti2008extending}.
 
