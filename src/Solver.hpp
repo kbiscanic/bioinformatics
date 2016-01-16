@@ -20,23 +20,28 @@ class Solver {
   pair<int, pair<string, string> > calculate_with_path();
 
  private:
-  int HASH_BASE = 50077;
   SubmatrixCalculator* subm_calc;
 
   const char BLANK_CHAR = '-';
-  string final_columns[2];
 
   void fill_edit_matrix();
   void fill_edit_matrix_low_memory();
-  vector<string> final_rows[2];
+  void calculateStringOffsets();
+
+  vector<int> final_rows[2];
+  int final_columns[2];
+
   string alphabet;
   string string_a, string_b;
 
   int string_a_real_size;
   int string_b_real_size;
 
-  vector<vector<string> > all_columns;
-  vector<vector<string> > all_rows;
+  vector<vector<int> > all_columns;
+  vector<vector<int> > all_rows;
+
+  vector<int> str_a_offsets;
+  vector<int> str_b_offsets;
 
   // value of the top left cell for each submatrix
   vector<vector<int> > top_left_costs;

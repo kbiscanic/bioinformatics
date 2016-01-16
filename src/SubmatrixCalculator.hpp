@@ -22,13 +22,13 @@ public:
     ~SubmatrixCalculator();
     void calculate();
     pair<vector<int>, pair<pair<int, int>, pair<int, int> > > getSubmatrixPath(
-        string strLeft, string strTop, string stepLeft, string stepTop,
+        string strLeft, string strTop, int stepLeft, int stepTop,
         int finalRow, int finalCol, int initialCost);
-    void calculateCostSubmatrix(string strLeft, string strTop, string stepLeft,
-                                string stepTop, int initialCost);
+    void calculateCostSubmatrix(string strLeft, string strTop, int stepLeft,
+                                int stepTop, int initialCost);
     inline void calculateSubmatrix(string strLeft, string strTop, string stepLeft,
                                    string stepTop);
-    pair<string, string> calculateFinalSteps(string strLeft, string strTop,
+    pair<int, int> calculateFinalSteps(string strLeft, string strTop,
             string stepLeft, string stepTop);
     void generateInitialSteps(int pos, string currStep);
     void generateInitialStrings(int pos, string currString, bool blanks);
@@ -47,10 +47,10 @@ public:
         Returns the precalculated final step vectors for a given initial submatrix
        description.
     */
-    inline pair<string, string> getFinalSteps(string strLeft, string strTop,
+   /* inline pair<string, string> getFinalSteps(string strLeft, string strTop,
             string stepLeft, string stepTop) {
         return resultIndex[getOffset(strLeft, strTop, stepLeft, stepTop)];
-    }
+    }*/
 
     /*
         Transforms the step vector to a string. The string characters have no
@@ -67,14 +67,28 @@ public:
         return ret;
     }
 
+    vector<int> stepsToVector(int steps){
+        vector<int> rev;
+        for (int i = 0; i < this->dimension; i++){
+            rev.push_back(steps % 10);
+            steps /= 10;
+        }
+
+        vector<int> ret;
+        for (int i = rev.size() - 1; i >= 0; i--){
+            ret.push_back(rev[i]);
+        }
+        return ret;
+    }
+
     inline int getOffset(string strLeft, string strTop, string stepLeft, string stepTop) {
         int offset = 0;
 
         for (unsigned int i = 0; i < this->dimension; i++) {
-            offset += charLeftOffset[i][alphabetMap[strLeft[i]]];
-            offset += charTopOffset[i][alphabetMap[strTop[i]]];
-            offset += stepLeftOffset[i][stepLeft[i] - '0'];
-            offset += stepTopOffset[i][stepTop[i] - '0'];
+            offset += charLeftOffset[this->dimension - i - 1][alphabetMap[strLeft[i]]];
+            offset += charTopOffset[this->dimension - i - 1][alphabetMap[strTop[i]]];
+            offset += stepLeftOffset[this->dimension - i - 1][stepLeft[i] - '0'];
+            offset += stepTopOffset[this->dimension - i - 1][stepTop[i] - '0'];
         }
 
         return offset;
@@ -107,36 +121,86 @@ public:
             }
             temp_offset *= (this->alphabet.size() + 1);
         }
-        /*
-                        // DEBUG address offset printing
-                        for (int j = this->dimension - 1; j >= 0; j--) {
-                            for (int i = 0; i < charLeftOffset[j].size(); i++)
-                                cout << charLeftOffset[j][i] << " ";
-                            cout << "   ";
-                        }
-                        cout << endl << endl;
 
-                        for (int j = this->dimension - 1; j >= 0; j--) {
-                            for (int i = 0; i < charTopOffset[j].size(); i++)
-                                cout << charTopOffset[j][i] << " ";
-                            cout << "   ";
-                        }
-                        cout << endl << endl;
+        if (initialSteps.size() == 0){
+            cout << "Missing initial steps." << endl;
+            return;
+        }
 
-                        for (int j = this->dimension - 1; j >= 0; j--) {
-                            for (int i = 0; i < stepLeftOffset[j].size(); i++)
-                                cout << stepLeftOffset[j][i] << " ";
-                            cout << "   ";
-                        }
-                        cout << endl << endl;
+        // setting the offset index length
+        int stepOffsetMaxAddress = 0;
+        for (int i = 0; i < this->dimension; i++){
+            stepOffsetMaxAddress = (stepOffsetMaxAddress * 10) + 2;
+        }
+        stepOffsets[0].resize(++stepOffsetMaxAddress); // left steps
+        stepOffsets[1].resize(++stepOffsetMaxAddress); // top steps
 
-                        for (int j = this->dimension - 1; j >= 0; j--) {
-                            for (int i = 0; i < stepTopOffset[j].size(); i++)
-                                cout << stepTopOffset[j][i] << " ";
-                            cout << "   ";
-                        }
-                        cout << endl << endl;
+        /*// DEBUG step offset locations
+        cout << "Reserved (2x) " << stepOffsetMaxAddress << " step offset locations." << endl;*/
+
+        for (unsigned int i = 0; i < initialSteps.size(); i++){
+            int stepNumeric = 0;
+            int offsetLeft = 0;
+            int offsetTop = 0;
+            for (int j = 0; j < this->dimension; j++){
+                stepNumeric *= 10;
+                stepNumeric += initialSteps[i][j] - '0';
+                offsetLeft += stepLeftOffset[this->dimension - j - 1][initialSteps[i][j] - '0'];
+                offsetTop += stepTopOffset[this->dimension - j - 1][initialSteps[i][j] - '0'];
+            }
+            stepOffsets[0][stepNumeric] = offsetLeft;
+            stepOffsets[1][stepNumeric] = offsetTop;
+
+            /*// DEBUG
+            cout << i << ": " << initialSteps[i] << " " << stepNumeric << " -> " << offsetLeft << " " << offsetTop << endl;*/
+        }
+
+        /*// DEBUG address offset printing
+        for (int j = this->dimension - 1; j >= 0; j--) {
+            for (int i = 0; i < charLeftOffset[j].size(); i++)
+                cout << charLeftOffset[j][i] << " ";
+            cout << "   ";
+        }
+        cout << endl << endl;
+
+        for (int j = this->dimension - 1; j >= 0; j--) {
+            for (int i = 0; i < charTopOffset[j].size(); i++)
+                cout << charTopOffset[j][i] << " ";
+            cout << "   ";
+        }
+        cout << endl << endl;
+
+        for (int j = this->dimension - 1; j >= 0; j--) {
+            for (int i = 0; i < stepLeftOffset[j].size(); i++)
+                cout << stepLeftOffset[j][i] << " ";
+            cout << "   ";
+        }
+        cout << endl << endl;
+
+        for (int j = this->dimension - 1; j >= 0; j--) {
+            for (int i = 0; i < stepTopOffset[j].size(); i++)
+                cout << stepTopOffset[j][i] << " ";
+            cout << "   ";
+        }
+        cout << endl << endl;
         */
+    }
+
+    int sumSteps(int stepsNumeric){
+        int sum = 0;
+        for (int i = 0; i < this->dimension; i++){
+            sum += stepsNumeric % 10 - 1;
+            stepsNumeric /= 10;
+        }
+        return sum;
+    }
+
+    static int stepsToInt(vector<int> steps){
+        int ret = 0;
+        for (int i = 0; i < steps.size(); i++){
+            ret = ret * 10 + steps[i] + 1;
+        }
+        return ret;
     }
 
     /*
@@ -173,7 +237,9 @@ public:
         return ret;
     }
 
-    pair<string, string>* resultIndex;
+    pair<int, int>* resultIndex;
+    // mapping of step vectors to offsets; 0 - left, 1 - top
+    vector<int> stepOffsets[2];
 private:
     int dimension;
     int replaceCost;
@@ -187,11 +253,17 @@ private:
     char blankCharacter;
     vector<string> initialSteps;
     vector<string> initialStrings;
-    vector<vector<int> > lastSubH, lastSubV;
-    vector<int> charTopOffset[3];
+
+    // memory offsets; used when storing/loading submatrices
     vector<int> charLeftOffset[3];
-    vector<int> stepTopOffset[3];
+    vector<int> charTopOffset[3];
     vector<int> stepLeftOffset[3];
-    double times[2];  // allocation time, matrix calculation time
+    vector<int> stepTopOffset[3];
+
+    // allocation time, matrix calculation time
+    double times[2];
+
+    // temporary matrices
+    vector<vector<int> > lastSubH, lastSubV;
 };
 #endif

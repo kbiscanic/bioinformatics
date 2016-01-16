@@ -18,7 +18,9 @@ Four Russians algorithm.
 #include "SubmatrixCalculator.hpp"
 
 SubmatrixCalculator::SubmatrixCalculator() {}
-SubmatrixCalculator::~SubmatrixCalculator() {}
+SubmatrixCalculator::~SubmatrixCalculator() {
+    delete this->resultIndex;
+}
 
 SubmatrixCalculator::SubmatrixCalculator(int _dimension, string _alphabet,
                                          char _blankCharacter, int _replaceCost,
@@ -45,10 +47,11 @@ void SubmatrixCalculator::calculate() {
   generateInitialStrings(0, "", false);
   calculateOffsets();
 
+  // allocate the memory locations required to store the submatrices
   int startTime = clock();
   int memoryRequired = charLeftOffset[this->dimension - 1][this->alphabet.size()] + charLeftOffset[this->dimension - 1][1] + 5;
   cout << "Allocating " << memoryRequired << " locations." << endl;
-  this->resultIndex = new pair<string, string>[memoryRequired];
+  this->resultIndex = new pair<int, int>[memoryRequired];
   this->times[0] = (clock() - startTime) / double(CLOCKS_PER_SEC);
   cout << "Allocation time: " << this->times[0] << "s" << endl;
 
@@ -69,6 +72,9 @@ void SubmatrixCalculator::calculate() {
         for (int stepD = 0; stepD < initialSteps.size(); stepD++) {
           // storing the resulting final rows for future reference
           int offset = getOffset(initialStrings[strA], initialStrings[strB], initialSteps[stepC], initialSteps[stepD]);
+        //  cout << stepOffsets[0][stepsToInt(stepsToVector(initialSteps[stepC]))] << " " << stepOffsets[1][stepsToInt(stepsToVector(initialSteps[stepD]))] << endl;
+         // cout << initialSteps[stepC] << " " << initialSteps[stepD] << " to " << stepsToInt(stepsToVector(initialSteps[stepC])) << " " << stepsToInt(stepsToVector(initialSteps[stepD])) << endl;
+         // system("pause");
           resultIndex[offset] =
               calculateFinalSteps(initialStrings[strA], initialStrings[strB],
                                   initialSteps[stepC], initialSteps[stepD]);
@@ -101,7 +107,7 @@ void SubmatrixCalculator::calculate() {
 */
 pair<vector<int>, pair<pair<int, int>, pair<int, int> > >
 SubmatrixCalculator::getSubmatrixPath(string strLeft, string strTop,
-                                      string stepLeft, string stepTop,
+                                      int stepLeft, int stepTop,
                                       int finalRow, int finalCol,
                                       int initialCost) {
   calculateCostSubmatrix(strLeft, strTop, stepLeft, stepTop, initialCost);
@@ -156,14 +162,17 @@ SubmatrixCalculator::getSubmatrixPath(string strLeft, string strTop,
      3 - moving diagonally up-left in the submatrix (replacing / matching)
 */
 void SubmatrixCalculator::calculateCostSubmatrix(string strLeft, string strTop,
-                                                 string stepLeft,
-                                                 string stepTop,
+                                                 int stepLeft, int stepTop,
                                                  int initialCost) {
+
+  vector <int> stepLeftVec = stepsToVector(stepLeft);
+  vector <int> stepTopVec = stepsToVector(stepTop);
+
   lastSubV[0][0] = initialCost;
   lastSubH[0][0] = 0;
   for (int i = 1; i <= this->dimension; i++) {
-    lastSubV[0][i] = lastSubV[0][i - 1] + stepTop[i - 1] - '1';
-    lastSubV[i][0] = lastSubV[i - 1][0] + stepLeft[i - 1] - '1';
+    lastSubV[0][i] = lastSubV[0][i - 1] + stepTopVec[i - 1] - '1';
+    lastSubV[i][0] = lastSubV[i - 1][0] + stepLeftVec[i - 1] - '1';
     lastSubH[0][i] = 0;
     lastSubH[i][0] = 0;
   }
@@ -268,10 +277,10 @@ inline void SubmatrixCalculator::calculateSubmatrix(string strLeft,
 /*
     Calculates the final step vectors for a given initial submatrix description.
 */
-pair<string, string> SubmatrixCalculator::calculateFinalSteps(string strLeft,
-                                                              string strTop,
-                                                              string stepLeft,
-                                                              string stepTop) {
+pair<int, int> SubmatrixCalculator::calculateFinalSteps(string strLeft,
+                                                        string strTop,
+                                                        string stepLeft,
+                                                        string stepTop) {
   calculateSubmatrix(strLeft, strTop, stepLeft, stepTop);
 
   vector<int> stepRight(this->dimension, 0);
@@ -279,8 +288,11 @@ pair<string, string> SubmatrixCalculator::calculateFinalSteps(string strLeft,
     stepRight[i - 1] = lastSubV[i][this->dimension];
   }
 
-  vector<int> stepBot = lastSubH[this->dimension];
-  return make_pair(stepsToString(stepRight), stepsToString(stepBot).substr(1));
+  vector<int> stepBot(this->dimension, 0);
+  for (int i = 1; i <= this->dimension; i++) {
+    stepBot[i - 1] = lastSubH[this->dimension][i];
+  }
+  return make_pair(stepsToInt(stepRight), stepsToInt(stepBot));
 }
 
 void SubmatrixCalculator::generateInitialSteps(int pos, string currStep) {

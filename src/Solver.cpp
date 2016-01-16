@@ -70,6 +70,28 @@ Solver::Solver(string str_a, string str_b, string _alphabet,
             this->BLANK_CHAR);
 
     subm_calc->calculate();
+
+    calculateStringOffsets();
+}
+
+void Solver::calculateStringOffsets(){
+    this->str_a_offsets.resize(row_num + 1);
+    this->str_b_offsets.resize(column_num + 1);
+
+    string tempBlank = "";
+    string tempBlank2 = "";
+    for (int i = 0; i < this->submatrix_dim; i++){
+        tempBlank += alphabet[0];
+        tempBlank2 += '0';
+    }
+
+    for (int i = 1; i <= row_num; i++){
+        str_a_offsets[i] = subm_calc->getOffset(string_a.substr((i - 1) * submatrix_dim, submatrix_dim), tempBlank, tempBlank2, tempBlank2);
+    }
+
+    for (int i = 1; i <= column_num; i++){
+        str_b_offsets[i] = subm_calc->getOffset(tempBlank, string_b.substr((i - 1) * submatrix_dim, submatrix_dim), tempBlank2, tempBlank2);
+    }
 }
 
 /*
@@ -200,12 +222,16 @@ pair<int, pair<string, string> > Solver::calculate_with_path() {
     each submatrix in memory.
 */
 void Solver::fill_edit_matrix() {
-    all_columns.resize(row_num + 1, vector<string>(column_num + 1, ""));
-    all_rows.resize(row_num + 1, vector<string>(column_num + 1, ""));
+    all_columns.resize(row_num + 1, vector<int>(column_num + 1, 0));
+    all_rows.resize(row_num + 1, vector<int>(column_num + 1, 0));
     top_left_costs.resize(row_num + 1, vector<int>(column_num + 1, 0));
 
-    string initial_string =
-        SubmatrixCalculator::stepsToString(vector<int>(submatrix_dim, 1));
+    int initialVector = 0;
+    for (int i = 0; i < submatrix_dim; i++){
+        initialVector = initialVector * 10 + 2; // 222 == "222" == (1, 1, 1)
+    }
+
+    // padding string b step vectors
     for (int submatrix_j = 1; submatrix_j <= column_num; submatrix_j++) {
         if ((submatrix_j * submatrix_dim - 1) >= string_b_real_size) {
             vector<int> temp_vec(submatrix_dim, 0);
@@ -213,12 +239,13 @@ void Solver::fill_edit_matrix() {
                     i < (string_b_real_size - ((submatrix_j - 1) * submatrix_dim));
                     i++)
                 temp_vec[i] = 1;
-            all_rows[0][submatrix_j] = SubmatrixCalculator::stepsToString(temp_vec);
+            all_rows[0][submatrix_j] = SubmatrixCalculator::stepsToInt(temp_vec);
         } else {
-            all_rows[0][submatrix_j] = initial_string;
+            all_rows[0][submatrix_j] = initialVector;
         }
     }
 
+    // padding string a step vectors
     for (int submatrix_i = 1; submatrix_i <= row_num; submatrix_i++) {
         if ((submatrix_i * submatrix_dim - 1) >= string_a_real_size) {
             vector<int> temp_vec(submatrix_dim, 0);
@@ -227,9 +254,9 @@ void Solver::fill_edit_matrix() {
                     i++)
                 temp_vec[i] = 1;
             all_columns[submatrix_i][0] =
-                SubmatrixCalculator::stepsToString(temp_vec);
+                SubmatrixCalculator::stepsToInt(temp_vec);
         } else {
-            all_columns[submatrix_i][0] = initial_string;
+            all_columns[submatrix_i][0] = initialVector;
         }
     }
 
@@ -239,14 +266,17 @@ void Solver::fill_edit_matrix() {
         else
             top_left_costs[submatrix_i][1] = (submatrix_i - 1) * submatrix_dim;
 
-        string temp_a = string_a.substr((submatrix_i - 1) * submatrix_dim, submatrix_dim);
         for (int submatrix_j = 1; submatrix_j <= column_num; submatrix_j++) {
 
-            pair<string, string> final_steps = subm_calc->getFinalSteps(
-                        temp_a,
-                        string_b.substr((submatrix_j-1)*submatrix_dim, submatrix_dim),
-                        all_columns[submatrix_i][submatrix_j-1],
-                        all_rows[submatrix_i-1][submatrix_j]);
+            pair<int, int> final_steps = subm_calc->resultIndex[
+                // offset calculation
+                str_a_offsets[submatrix_i] +                                // left string
+                str_b_offsets[submatrix_j] +                                // top string
+                // left steps
+                subm_calc->stepOffsets[0][all_columns[submatrix_i][submatrix_j - 1]] +
+                // top steps
+                subm_calc->stepOffsets[1][all_rows[submatrix_i - 1][submatrix_j]]
+            ];
 
             all_columns[submatrix_i][submatrix_j] = final_steps.first;
             all_rows[submatrix_i][submatrix_j] = final_steps.second;
@@ -255,7 +285,7 @@ void Solver::fill_edit_matrix() {
                 top_left_costs[submatrix_i][submatrix_j] =
                     top_left_costs[submatrix_i][submatrix_j - 1];
                 top_left_costs[submatrix_i][submatrix_j] += subm_calc->sumSteps(
-                            all_rows[submatrix_i - 1][submatrix_j - 1]);
+                    all_rows[submatrix_i - 1][submatrix_j - 1]);
             }
         }
     }
@@ -268,46 +298,50 @@ void Solver::fill_edit_matrix() {
 */
 void Solver::fill_edit_matrix_low_memory() {
     for (int i = 0; i < 2; i++) {
-        final_rows[i] = vector<string>(column_num + 1, "");
+        final_rows[i].resize(column_num + 1);
     }
 
-    string initial_string =
-        SubmatrixCalculator::stepsToString(vector<int>(submatrix_dim, 1));
+    int initialVector = 0;
+    for (int i = 0; i < submatrix_dim; i++){
+        initialVector = initialVector * 10 + 2; // 222 == "222" == (1, 1, 1)
+    }
+
+    // padding string b step vectors
     for (int submatrix_j = 1; submatrix_j <= column_num; submatrix_j++) {
         if ((submatrix_j * submatrix_dim - 1) >= string_b_real_size) {
             vector<int> temp_vec(submatrix_dim, 0);
-            for (int i = 0;
-                    i < (string_b_real_size - ((submatrix_j - 1) * submatrix_dim));
-                    i++)
+            for (int i = 0; i < (string_b_real_size - ((submatrix_j - 1) * submatrix_dim));
+                i++)
                 temp_vec[i] = 1;
-            final_rows[0][submatrix_j] = SubmatrixCalculator::stepsToString(temp_vec);
+            final_rows[0][submatrix_j] = SubmatrixCalculator::stepsToInt(temp_vec);
         } else {
-            final_rows[0][submatrix_j] = initial_string;
+            final_rows[0][submatrix_j] = initialVector;
         }
     }
 
     for (int submatrix_i = 1, alti = 1; submatrix_i <= row_num;
             submatrix_i++, alti = !alti) {
+        // padding string a step vectors
         if ((submatrix_i * submatrix_dim - 1) >= string_a_real_size) {
             vector<int> temp_vec(submatrix_dim, 0);
-            for (int i = 0;
-                    i < (string_a_real_size - ((submatrix_i - 1) * submatrix_dim));
+            for (int i = 0; i < (string_a_real_size - ((submatrix_i - 1) * submatrix_dim));
                     i++)
                 temp_vec[i] = 1;
-            final_columns[0] = SubmatrixCalculator::stepsToString(temp_vec);
+            final_columns[0] = SubmatrixCalculator::stepsToInt(temp_vec);
         } else {
-            final_columns[0] = initial_string;
+            final_columns[0] = initialVector;
         }
 
-        string temp_a = string_a.substr((submatrix_i - 1) * submatrix_dim, submatrix_dim);
         for (int submatrix_j = 1, altj = 1; submatrix_j <= column_num;
                 submatrix_j++, altj = !altj) {
 
-            pair<string, string> final_steps = subm_calc->resultIndex[subm_calc->getOffset(
-                        temp_a,
-                        string_b.substr((submatrix_j-1)*submatrix_dim, submatrix_dim),
-                        final_columns[!altj],
-                        final_rows[!alti][submatrix_j])];
+            pair<int, int> final_steps = subm_calc->resultIndex[
+                // offset calculation
+                str_a_offsets[submatrix_i] +                                // left string
+                str_b_offsets[submatrix_j] +                                // top string
+                subm_calc->stepOffsets[0][final_columns[!altj]] +           // left steps
+                subm_calc->stepOffsets[1][final_rows[!alti][submatrix_j]]   // top steps
+            ];
 
             final_columns[altj] = final_steps.first;
             final_rows[alti][submatrix_j] = final_steps.second;
@@ -315,10 +349,9 @@ void Solver::fill_edit_matrix_low_memory() {
     }
 }
 /*
-
 int main() {
-    Solver
-    solver("ACCGGTTGCCCGCTACATGCTCCAACCATCCGGCGATGGTTACCTGCTGCCGGACTGGTATAGCGCAGAGCCGCGTCGACACCGCGTATCCGTGCCCCCC",
+    // Solver solver ("ATTACG", "ATTAG", "ATGC", 2);
+    Solver solver("ACCGGTTGCCCGCTACATGCTCCAACCATCCGGCGATGGTTACCTGCTGCCGGACTGGTATAGCGCAGAGCCGCGTCGACACCGCGTATCCGTGCCCCCC",
            "TGGGGATTGCCAGTCCGTCCGGGGAGGTATTCAGAAAGGTACACCGGTCTGTTGATATTCATGTAACAGGTATTAATGATGAAGAAAGGAATGGCAAACA",
            "ATGC", 2);
     int sol_ed = solver.calculate();
@@ -326,8 +359,9 @@ int main() {
 
     pair<int, pair<string, string> > sol = solver.calculate_with_path();
     cout << sol.first << endl << sol.second.first << endl << sol.second.second
-         << endl;
+        << endl;
 
     return 0;
 }
+
 */
