@@ -157,28 +157,28 @@ public:
 
         /*// DEBUG address offset printing
         for (int j = this->dimension - 1; j >= 0; j--) {
-            for (int i = 0; i < charLeftOffset[j].size(); i++)
+            for (unsigned int i = 0; i < charLeftOffset[j].size(); i++)
                 cout << charLeftOffset[j][i] << " ";
             cout << "   ";
         }
         cout << endl << endl;
 
         for (int j = this->dimension - 1; j >= 0; j--) {
-            for (int i = 0; i < charTopOffset[j].size(); i++)
+            for (unsigned int i = 0; i < charTopOffset[j].size(); i++)
                 cout << charTopOffset[j][i] << " ";
             cout << "   ";
         }
         cout << endl << endl;
 
         for (int j = this->dimension - 1; j >= 0; j--) {
-            for (int i = 0; i < stepLeftOffset[j].size(); i++)
+            for (unsigned int i = 0; i < stepLeftOffset[j].size(); i++)
                 cout << stepLeftOffset[j][i] << " ";
             cout << "   ";
         }
         cout << endl << endl;
 
         for (int j = this->dimension - 1; j >= 0; j--) {
-            for (int i = 0; i < stepTopOffset[j].size(); i++)
+            for (unsigned int i = 0; i < stepTopOffset[j].size(); i++)
                 cout << stepTopOffset[j][i] << " ";
             cout << "   ";
         }
@@ -197,7 +197,7 @@ public:
 
     static int stepsToInt(vector<int> steps){
         int ret = 0;
-        for (int i = 0; i < steps.size(); i++){
+        for (unsigned int i = 0; i < steps.size(); i++){
             ret = ret * 10 + steps[i] + 1;
         }
         return ret;

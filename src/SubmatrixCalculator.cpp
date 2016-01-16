@@ -66,10 +66,10 @@ void SubmatrixCalculator::calculate() {
 
   // all possible initial steps and strings combinations
   startTime = clock();
-  for (int strA = 0; strA < initialStrings.size(); strA++) {
-    for (int strB = 0; strB < initialStrings.size(); strB++) {
-      for (int stepC = 0; stepC < initialSteps.size(); stepC++) {
-        for (int stepD = 0; stepD < initialSteps.size(); stepD++) {
+  for (unsigned int strA = 0; strA < initialStrings.size(); strA++) {
+    for (unsigned int strB = 0; strB < initialStrings.size(); strB++) {
+      for (unsigned int stepC = 0; stepC < initialSteps.size(); stepC++) {
+        for (unsigned int stepD = 0; stepD < initialSteps.size(); stepD++) {
           // storing the resulting final rows for future reference
           int offset = getOffset(initialStrings[strA], initialStrings[strB], initialSteps[stepC], initialSteps[stepD]);
         //  cout << stepOffsets[0][stepsToInt(stepsToVector(initialSteps[stepC]))] << " " << stepOffsets[1][stepsToInt(stepsToVector(initialSteps[stepD]))] << endl;
@@ -186,6 +186,7 @@ void SubmatrixCalculator::calculateCostSubmatrix(string strLeft, string strTop,
         lastSubV[i][j] = lastSubV[i][j - 1];
         lastSubH[i][j] = 2;
       } else {
+
         // replace
         int R = (strLeft[i - 1] != strTop[j - 1]) * this->replaceCost;
         lastSubV[i][j] = lastSubV[i - 1][j - 1] + R;
@@ -240,38 +241,8 @@ inline void SubmatrixCalculator::calculateSubmatrix(string strLeft,
           mmin(R - lastH, this->deleteCost, this->insertCost + lastV - lastH);
       lastSubH[i][j] =
           mmin(R - lastV, this->insertCost, this->deleteCost + lastH - lastV);
-      /*  if (strLeft == "CG" && strTop == "G-" && stepLeft == "01" && stepTop
-                == "22") {
-            cout << "lastv " << lastV << " lasth " << lastH << " R " << R <<
-                 endl;
-            cout << R - lastH << " " << delCost << " " <<
-                 insCost + lastV - lastH << endl;
-            cout << R - lastV << " " << insCost << " " <<
-                 delCost + lastH - lastV << endl;
-        }*/
     }
   }
-  /* if (strLeft == "CG" && strTop == "G-" && stepLeft == "01" && stepTop
-                   == "22") {
-       // DEBUG
-       cout << "left " << strLeft << " top " << strTop << " stepleft "
-            << SubmatrixCalculator::stepsToPrettyString(stepLeft) << " steptop "
-   <<
-            stepsToPrettyString(stepTop) << endl;
-       cout << "vertical:" << endl;
-       for (int i = 0; i <= this->dimension; i++) {
-           for (int j = 0; j <= this->dimension; j++)
-               cout << lastSubV[i][j] << " ";
-           cout << endl;
-       }
-       cout << "horizontal:" << endl;
-       for (int i = 0; i <= this->dimension; i++) {
-           for (int j = 0; j <= this->dimension; j++)
-               cout << lastSubH[i][j] << " ";
-           cout << endl;
-       }
-       system("pause");
-   }*/
 }
 
 /*
@@ -316,7 +287,7 @@ void SubmatrixCalculator::generateInitialStrings(int pos, string currString,
   }
 
   if (!blanks) {
-    for (int i = 0; i < this->alphabet.size(); i++) {
+    for (unsigned int i = 0; i < this->alphabet.size(); i++) {
       string tmp = currString;
       tmp.push_back(this->alphabet[i]);
       generateInitialStrings(pos + 1, tmp, false);
@@ -328,16 +299,20 @@ void SubmatrixCalculator::generateInitialStrings(int pos, string currString,
   generateInitialStrings(pos + 1, tmp, true);
 }
 
-// DEBUG
-void SubmatrixCalculator::printDebug() {
-  for (int i = 0; i < initialSteps.size(); i++)
-    cout << stepsToPrettyString(initialSteps[i]) << endl;
-  for (int i = 0; i < initialStrings.size(); i++)
-    cout << initialStrings[i] << endl;
-}
-
+/*
+    Custom minimum function with 3 arguments to reduce function call
+    overhead.
+*/
 inline int SubmatrixCalculator::mmin(int x, int y, int z) {
   return x > y ? (y < z ? y : z) : x < z ? x : z;
+}
+
+// DEBUG
+void SubmatrixCalculator::printDebug() {
+  for (unsigned int i = 0; i < initialSteps.size(); i++)
+    cout << stepsToPrettyString(initialSteps[i]) << endl;
+  for (unsigned int i = 0; i < initialStrings.size(); i++)
+    cout << initialStrings[i] << endl;
 }
 
 /*int main() {

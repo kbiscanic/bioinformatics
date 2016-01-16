@@ -47,13 +47,13 @@ Solver::Solver(string str_a, string str_b, string _alphabet,
     string_b_real_size = string_b.size();
 
     // pad the strings to fit dimension
-    if (string_a.size() % submatrix_dim) {
+    if (string_a.size() % submatrix_dim != 0) {
         int cnt = submatrix_dim - string_a.size() % submatrix_dim;
         while (cnt--) {
             string_a += this->BLANK_CHAR;
         }
     }
-    if (string_b.size() % submatrix_dim) {
+    if (string_b.size() % submatrix_dim != 0) {
         int cnt = submatrix_dim - string_b.size() % submatrix_dim;
         while (cnt--) {
             string_b += this->BLANK_CHAR;
@@ -61,8 +61,8 @@ Solver::Solver(string str_a, string str_b, string _alphabet,
     }
 
     // calculate the dimensions of the edit matrix (the number of submatrices)
-    this->row_num = string_a.size() / (submatrix_dim);
-    this->column_num = string_b.size() / (submatrix_dim);
+    this->row_num = string_a.size() / submatrix_dim;
+    this->column_num = string_b.size() / submatrix_dim;
     cout << "Submatrices in edit table: " << row_num << "x" << column_num << endl;
 
     // generate all possible submatrices for the given alphabet and dimension
@@ -156,7 +156,7 @@ vector<int> Solver::get_edit_path() {
                   string_b.substr((y - 1) * submatrix_dim, submatrix_dim),
                   all_columns[x][y - 1], all_rows[x - 1][y], sub_x, sub_y,
                   top_left_costs[x][y]);
-        for (int i = 0; i < ret.first.size(); i++) {
+        for (unsigned int i = 0; i < ret.first.size(); i++) {
             edit_path.push_back(ret.first[i]);
         }
 
@@ -355,6 +355,7 @@ void Solver::fill_edit_matrix_low_memory() {
         }
     }
 }
+
 /*
 int main() {
     // Solver solver ("ATTACG", "ATTAG", "ATGC", 2);
