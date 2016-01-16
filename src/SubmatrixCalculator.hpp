@@ -67,7 +67,7 @@ public:
         return ret;
     }
 
-    int getOffset(string strLeft, string strTop, string stepLeft, string stepTop) {
+    inline int getOffset(string strLeft, string strTop, string stepLeft, string stepTop) {
         int offset = 0;
 
         for (unsigned int i = 0; i < this->dimension; i++) {
@@ -173,6 +173,7 @@ public:
         return ret;
     }
 
+    pair<string, string>* resultIndex;
 private:
     int dimension;
     int replaceCost;
@@ -191,7 +192,6 @@ private:
     vector<int> charLeftOffset[3];
     vector<int> stepTopOffset[3];
     vector<int> stepLeftOffset[3];
-    pair<string, string>* resultIndex;
     double times[2];  // allocation time, matrix calculation time
 };
 #endif

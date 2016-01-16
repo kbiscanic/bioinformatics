@@ -303,11 +303,11 @@ void Solver::fill_edit_matrix_low_memory() {
         for (int submatrix_j = 1, altj = 1; submatrix_j <= column_num;
                 submatrix_j++, altj = !altj) {
 
-            pair<string, string> final_steps = subm_calc->getFinalSteps(
+            pair<string, string> final_steps = subm_calc->resultIndex[subm_calc->getOffset(
                         temp_a,
                         string_b.substr((submatrix_j-1)*submatrix_dim, submatrix_dim),
                         final_columns[!altj],
-                        final_rows[!alti][submatrix_j]);
+                        final_rows[!alti][submatrix_j])];
 
             final_columns[altj] = final_steps.first;
             final_rows[alti][submatrix_j] = final_steps.second;
