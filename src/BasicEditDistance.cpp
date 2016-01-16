@@ -55,7 +55,7 @@ void BasicEditDistance::calculate() {
     dp[alt][0] = cost[int(first[i - 1])][EDIST_BLANK] + dp[!alt][0];
     for (unsigned int j = 1; j <= second.size(); j++) {
       dp[alt][j] = min(
-          min(dp[!alt][j - 1] + cost[int(first[i - 1])][second[j - 1]],  // replace
+          min(dp[!alt][j - 1] + cost[int(first[i - 1])][int(second[j - 1])],  // replace
               dp[!alt][j] + cost[int(first[i - 1])][EDIST_BLANK]),       // delete
           dp[alt][j - 1] + cost[EDIST_BLANK][int(second[i - 1])]);       // insert
     }
