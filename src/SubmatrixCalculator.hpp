@@ -70,7 +70,7 @@ public:
     vector<int> stepsToVector(int steps){
         vector<int> rev;
         for (int i = 0; i < this->dimension; i++){
-            rev.push_back(steps % 10);
+            rev.push_back(steps % 10 - 1);
             steps /= 10;
         }
 

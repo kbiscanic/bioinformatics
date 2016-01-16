@@ -74,6 +74,12 @@ Solver::Solver(string str_a, string str_b, string _alphabet,
     calculateStringOffsets();
 }
 
+/*
+    Calculates the submatrix address offset for each initial string that can
+    appear during calculation, i.e. sequentially for each substring of
+    string_a and string_b of length submatrix_dim. Saves time when combining
+    submatrix results.
+*/
 void Solver::calculateStringOffsets(){
     this->str_a_offsets.resize(row_num + 1);
     this->str_b_offsets.resize(column_num + 1);
@@ -363,5 +369,4 @@ int main() {
 
     return 0;
 }
-
 */

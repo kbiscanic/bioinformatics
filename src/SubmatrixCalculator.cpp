@@ -171,8 +171,8 @@ void SubmatrixCalculator::calculateCostSubmatrix(string strLeft, string strTop,
   lastSubV[0][0] = initialCost;
   lastSubH[0][0] = 0;
   for (int i = 1; i <= this->dimension; i++) {
-    lastSubV[0][i] = lastSubV[0][i - 1] + stepTopVec[i - 1] - '1';
-    lastSubV[i][0] = lastSubV[i - 1][0] + stepLeftVec[i - 1] - '1';
+    lastSubV[0][i] = lastSubV[0][i - 1] + stepTopVec[i - 1];
+    lastSubV[i][0] = lastSubV[i - 1][0] + stepLeftVec[i - 1];
     lastSubH[0][i] = 0;
     lastSubH[i][0] = 0;
   }
