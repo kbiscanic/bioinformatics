@@ -19,10 +19,6 @@ addons:
 script:
   - make clean
   - make
-  - ./bin/bioinformatics d test/data/test-1000.fa testd.maf && cat testd.maf
-  - ./bin/bioinformatics d test/data/test-10000.fa testd.maf && cat testd.maf
-  - ./bin/bioinformatics d test/data/test-50000.fa testd.maf && cat testd.maf
-  - ./bin/bioinformatics d test/data/test-100000.fa testd.maf && cat testd.maf
   - ./bin/bioinformatics d test/data/test-500000.fa testd.maf && cat testd.maf
   - ./bin/bioinformatics d test/data/test-1000000.fa testd.maf && cat testd.maf
 
