@@ -1,7 +1,7 @@
 \documentclass[times, utf8, seminar, numeric]{fer}
 \usepackage{booktabs}
 \usepackage{float}
-\usepackage{footmisc}
+\usepackage[symbol]{footmisc}
 
 \begin{document}
 
@@ -201,22 +201,22 @@ The second complexity assumes the submatrices are stored in some tree-like fashi
 \chapter{Test results}
 Our algorithm was tested on synthetic sequences. Pairs of sequence reads were simulated using wgsim tool from reference chromosome of Escherichia coli bacteria, and then converted into FASTA file format which is used as an input file format. Output file format of our program was MAF (\textit{Multiple Alignment Format}) containing score, which is equal to string edit distance, and sequence alignment for algorithms that support it. 
 
-Pairs of sequence reads were generated with lengths of 100, 200, 500, 1 000, 5 000, 10 000, 50 000, 100 000, 500 000 and 1 000 000 characters. Every pair was then tested on our algorithm, as well as Needleman-Wunsch algorithm for reference. Every test was timed and maximal memory usage was observed for each of the algorithms. Fischer-Wagner algorithm was tested on sequences up to 100 000 characters because of its large time complexity. Both algorithms were tested in same conditions on the same computer running inside Bio-Linux-8 virtual machine with access to 2 CPU cores and 4GB RAM.
+Pairs of sequence reads were generated with lengths of 100, 200, 500, 1 000, 5 000, 10 000, 50 000, 100 000, 500 000 and 1 000 000 characters. Every pair was then tested on our algorithm, as well as Fischer-Wagner algorithm for reference. Every test was timed and maximal memory usage was observed for each of the algorithms. Fischer-Wagner algorithm was tested on sequences up to 100 000 characters because of its large time complexity. Both algorithms were tested in same conditions on the same computer running inside Bio-Linux-8 virtual machine with access to 2 CPU cores and 3GB RAM.
 \begin{table}[h]
 \centering
 \begin{tabular}{rccc}
 $N$ & Fischer-Wagner & Masek-Paterson & Masek-Paterson (alignment)\\
 \hline
-$      100 $&$ 0.483$ ms&$ 8.751$ ms&$ 10.25$ ms \\
-$      200 $&$ 1.633$ ms&$ 33.99$ ms&$ 35.24$ ms \\
-$      500 $&$ 7.954$ ms&$ 146.04$ ms&$ 151.66$ ms\\
-$    1 000 $&$ 44.34$ ms&$ 366.47$ ms&$ 511.02$ ms\\
-$    5 000 $&$ 847.7$ ms&$ 6.07$ s&$ 10.70$ s\\
-$   10 000 $&$ 3.253$ s&$ 24.27$ s&$ 39.83$ s\\
-$   50 000 $&$ 79.94$ s&$ 549.104$ s&$ - $\footnotemark[2]\\
-$  100 000 $&$ 331.6$ s&$ 2$ s&$ - $\footnotemark[2]\\
-$  500 000 $&$ 2 - 3$ h \footnotemark[1] &$ 2s $&$ - $\footnotemark[2]\\
-$1 000 000 $&$ 9 - 10$ h \footnotemark[1] &$ 2s $&$ - $\footnotemark[2]\\
+$      100 $&$ < 0.01$ s&$ <0.01$ s&$ <0.01 $ s \\
+$      200 $&$ < 0.01$ s&$ 0.07$ s&$ 0.07$ s \\
+$      500 $&$ < 0.01$ s&$ 0.07$ s&$ 0.07$ s\\
+$    1 000 $&$ 0.03$ s&$ 0.07$ s&$ 0.09$ s\\
+$    5 000 $&$ 0.78$ s&$ 0.21$ s&$ 0.55$ s\\
+$   10 000 $&$ 3.12$ s&$ 0.65$ s&$ 1.99$ s\\
+$   50 000 $&$ 94.94$ s&$ 22.75$ s&$ - $\footnotemark[2]\\
+$  100 000 $&$ 380.24$ s&$ 41.93$ s&$ - $\footnotemark[2]\\
+$  500 000 $&$ 2 - 3$ h\footnotemark[1] &$ 724.78$ s&$ - $\footnotemark[2]\\
+$1 000 000 $&$ 9 - 10$ h\footnotemark[1] &$ 49.73$ min&$ - $\footnotemark[2]\\
 \end{tabular}
 \caption{Time comparison}
 \end{table}
@@ -225,21 +225,21 @@ $1 000 000 $&$ 9 - 10$ h \footnotemark[1] &$ 2s $&$ - $\footnotemark[2]\\
 \begin{tabular}{rccc}
 $N$ & Fischer-Wagner & Masek-Paterson & Masek-Paterson (alignment) \\
 \hline
-$      100 $&$ 1756$ KB &$ 1612$ KB &$ 1828$ KB \\
-$      200 $&$ 1756$ KB &$ 7172$ KB &$ 7380$ KB \\
-$      500 $&$ 1768$ KB &$ 7180$ KB &$ 8432$ KB \\
-$    1 000 $&$ 1772$ KB &$ 7180$ KB &$ 11.86$ MB\\
-$    5 000 $&$ 1836$ KB &$ 7224$ KB &$ 126.4$ MB\\
-$   10 000 $&$ 1924$ KB &$ 7276$ KB &$ 484.7$ MB\\
-$   50 000 $&$ 2464$ KB &$ 805.59$ MB&$ - $\footnotemark[2]\\
-$  100 000 $&$ 3188$ KB &$ 2s $&$ - $\footnotemark[2]\\
-$  500 000 $&$ 2 - 3$ h\footnotemark[1]&$ 2s $&$ - $\footnotemark[2]\\
-$1 000 000 $&$ 9 - 10$ h\footnotemark[1]&$ 2s $&$ - $\footnotemark[2]\\
+$      100 $&$ 6976$ KB &$ 6320$ KB &$ 6832$ KB \\
+$      200 $&$ 7008$ KB &$ 7920$ KB &$ 8448$ KB \\
+$      500 $&$ 7024$ KB &$ 7936$ KB &$ 10.75$ MB \\
+$    1 000 $&$ 7056$ KB &$ 7952$ KB &$ 19.5$ MB\\
+$    5 000 $&$ 7296$ KB &$ 8176$ KB &$ 295.5$ MB\\
+$   10 000 $&$ 7616$ KB &$ 8416$ KB &$ 1.13$ GB\\
+$   50 000 $&$ 9824$ KB &$ 335.7$ MB&$ - $\footnotemark[2]\\
+$  100 000 $&$ 12.42$ MB &$ 356.9$ MB&$ - $\footnotemark[2]\\
+$  500 000 $&$ -$\footnotemark[1]&$ 370.6$ MB&$ - $\footnotemark[2]\\
+$1 000 000 $&$ -$\footnotemark[1]&$ 392.8$ MB&$ - $\footnotemark[2]\\
 \end{tabular}
 \caption{Maximal memory consumption comparison}
 \end{table}
-\footnote{estimated, too much time to execute}
-\footnote{too much memory to execute}
+\footnotetext[1]{too much time required for execution}
+\footnotetext[2]{too much memory required for execution}
 
 \chapter{Conclusion}
 We've presented an implementation of fast string alignment as described in \cite{masek1980faster}. Using the Four Russians algorithm combined with the proposed edit matrix reduction system we've achieved a significant improvement over the quadratic string alignment algorithm. In terms of time complexity, our implementation is faster by a factor of $log_{3|\sigma|}(N)$ where $|\sigma|$ denotes the alphabet size. When discussing space complexity, we use less memory (by the same factor) but the required memory is still a bottleneck when dealing with long strings. Nevertheless, an improvement is visible - we can calculate the edit script for strings up to a million length if provided with a supercomputer, and that was not the case for the quadratic algorithm.
