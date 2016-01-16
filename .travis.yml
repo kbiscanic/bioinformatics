@@ -19,4 +19,4 @@ addons:
 script:
   - make clean
   - make
-  - /usr/bin/time -v ./bin/bioinformatics d test/data/test-50000.fa testd.maf 
+  - ./bin/bioinformatics d test/data/test-50000.fa testd.maf 
