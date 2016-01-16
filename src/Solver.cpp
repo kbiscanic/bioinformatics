@@ -327,6 +327,7 @@ void Solver::fill_edit_matrix_low_memory() {
 
     for (int submatrix_i = 1, alti = 1; submatrix_i <= row_num;
             submatrix_i++, alti = !alti) {
+        if(submatrix_i % 30000 == 0) cout << submatrix_i << endl;
         // padding string a step vectors
         if ((submatrix_i * submatrix_dim - 1) >= string_a_real_size) {
             vector<int> temp_vec(submatrix_dim, 0);
