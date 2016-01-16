@@ -91,7 +91,7 @@ class SubmatrixCalculator {
     for (unsigned int i = 0; i < x.size(); i++) {
       ret = (ret * HASH_BASE + x[i]);
     }
-    // ret &= this->submatrixCountLimit - 1;  // fancy bit-work
+
     return ret;
   }
 
@@ -111,6 +111,8 @@ class SubmatrixCalculator {
     return ret;
   }
 
+  map<long long, pair<string, string> > results;
+
  private:
   int dimension;
   int replaceCost;
@@ -124,7 +126,6 @@ class SubmatrixCalculator {
   vector<string> initialSteps;
   vector<string> initialStrings;
   vector<vector<int> > lastSubH, lastSubV;
-  map<long long, pair<string, string> > results;
   double times[2];  // allocation time, matrix calculation time
 };
 #endif

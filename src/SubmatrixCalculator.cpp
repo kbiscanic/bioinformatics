@@ -271,13 +271,13 @@ pair<string, string> SubmatrixCalculator::calculateFinalSteps(string strLeft,
                                                               string stepTop) {
   calculateSubmatrix(strLeft, strTop, stepLeft, stepTop);
 
-  vector<int> stepRight(this->dimension + 1, 0);
+  vector<int> stepRight(this->dimension, 0);
   for (int i = 1; i <= this->dimension; i++) {
-    stepRight[i] = lastSubV[i][this->dimension];
+    stepRight[i - 1] = lastSubV[i][this->dimension];
   }
 
   vector<int> stepBot = lastSubH[this->dimension];
-  return make_pair(stepsToString(stepRight), stepsToString(stepBot));
+  return make_pair(stepsToString(stepRight), stepsToString(stepBot).substr(1));
 }
 
 void SubmatrixCalculator::generateInitialSteps(int pos, string currStep) {

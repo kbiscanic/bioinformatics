@@ -20,6 +20,7 @@ class Solver {
   pair<int, pair<string, string> > calculate_with_path();
 
  private:
+  int HASH_BASE = 50077;
   SubmatrixCalculator* subm_calc;
 
   const char BLANK_CHAR = '-';
