@@ -20,11 +20,3 @@ addons:
 script:
   - make clean
   - make
-  - /usr/bin/time -v ./bin/bioinformatics b test/data/test-100.fa testd.maf
-  - /usr/bin/time -v ./bin/bioinformatics b test/data/test-200.fa testd.maf
-  - /usr/bin/time -v ./bin/bioinformatics b test/data/test-500.fa testd.maf
-  - /usr/bin/time -v ./bin/bioinformatics b test/data/test-1000.fa testd.maf
-  - /usr/bin/time -v ./bin/bioinformatics b test/data/test-5000.fa testd.maf
-  - /usr/bin/time -v ./bin/bioinformatics b test/data/test-10000.fa testd.maf
-  - /usr/bin/time -v ./bin/bioinformatics b test/data/test-50000.fa testd.maf
-  - /usr/bin/time -v ./bin/bioinformatics b test/data/test-100000.fa testd.maf
