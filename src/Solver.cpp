@@ -239,28 +239,15 @@ void Solver::fill_edit_matrix() {
         else
             top_left_costs[submatrix_i][1] = (submatrix_i - 1) * submatrix_dim;
 
-        // small speed-up
-        long long hashInit = 0, hash = 0;
-        int start = (submatrix_i - 1) * submatrix_dim;
-        for (int i = 0; i < submatrix_dim; i++)
-            hashInit = (hashInit * HASH_BASE + string_a[i + start]);
-
-        start = 0;
+        string temp_a = string_a.substr((submatrix_i - 1) * submatrix_dim, submatrix_dim);
         for (int submatrix_j = 1; submatrix_j <= column_num; submatrix_j++) {
 
-            // hashing speed-up
-            hash = hashInit;
-            for (int i = 0; i < submatrix_dim; i++) {
-                hash = (hash * HASH_BASE + string_b[i + start]);
-            }
-            for (unsigned int i = 0; i < all_columns[submatrix_i][submatrix_j - 1].size(); i++) {
-                hash = (hash * HASH_BASE + all_columns[submatrix_i][submatrix_j - 1][i]);
-            }
-            for (unsigned int i = 0; i < all_rows[submatrix_i - 1][submatrix_j].size(); i++) {
-                hash = (hash * HASH_BASE + all_rows[submatrix_i - 1][submatrix_j][i]);
-            }
+            pair<string, string> final_steps = subm_calc->getFinalSteps(
+                        temp_a,
+                        string_b.substr((submatrix_j-1)*submatrix_dim, submatrix_dim),
+                        all_columns[submatrix_i][submatrix_j-1],
+                        all_rows[submatrix_i-1][submatrix_j]);
 
-            pair<string, string> final_steps = subm_calc->results[hash];
             all_columns[submatrix_i][submatrix_j] = final_steps.first;
             all_rows[submatrix_i][submatrix_j] = final_steps.second;
 
@@ -270,8 +257,6 @@ void Solver::fill_edit_matrix() {
                 top_left_costs[submatrix_i][submatrix_j] += subm_calc->sumSteps(
                             all_rows[submatrix_i - 1][submatrix_j - 1]);
             }
-
-            start += submatrix_dim;
         }
     }
 }
@@ -314,42 +299,28 @@ void Solver::fill_edit_matrix_low_memory() {
             final_columns[0] = initial_string;
         }
 
-        // small speed-up
-        long long hashInit = 0, hash = 0;
-        int start = (submatrix_i - 1) * submatrix_dim;
-        for (int i = 0; i < submatrix_dim; i++)
-            hashInit = (hashInit * HASH_BASE + string_a[i + start]);
-
-        start = 0;
+        string temp_a = string_a.substr((submatrix_i - 1) * submatrix_dim, submatrix_dim);
         for (int submatrix_j = 1, altj = 1; submatrix_j <= column_num;
                 submatrix_j++, altj = !altj) {
-            // hashing speed-up
-            hash = hashInit;
-            for (int i = 0; i < submatrix_dim; i++) {
-                hash = (hash * HASH_BASE + string_b[i + start]);
-            }
-            for (unsigned int i = 0; i < final_columns[!altj].size(); i++) {
-                hash = (hash * HASH_BASE + final_columns[!altj][i]);
-            }
-            for (unsigned int i = 0; i < final_rows[!alti][submatrix_j].size(); i++) {
-                hash = (hash * HASH_BASE + final_rows[!alti][submatrix_j][i]);
-            }
 
-            pair<string, string> final_steps = subm_calc->results[hash];
+            pair<string, string> final_steps = subm_calc->getFinalSteps(
+                        temp_a,
+                        string_b.substr((submatrix_j-1)*submatrix_dim, submatrix_dim),
+                        final_columns[!altj],
+                        final_rows[!alti][submatrix_j]);
+
             final_columns[altj] = final_steps.first;
             final_rows[alti][submatrix_j] = final_steps.second;
-
-            start += submatrix_dim;
         }
     }
 }
-
 /*
+
 int main() {
     Solver
     solver("ACCGGTTGCCCGCTACATGCTCCAACCATCCGGCGATGGTTACCTGCTGCCGGACTGGTATAGCGCAGAGCCGCGTCGACACCGCGTATCCGTGCCCCCC",
            "TGGGGATTGCCAGTCCGTCCGGGGAGGTATTCAGAAAGGTACACCGGTCTGTTGATATTCATGTAACAGGTATTAATGATGAAGAAAGGAATGGCAAACA",
-           "ATGC");
+           "ATGC", 2);
     int sol_ed = solver.calculate();
     cout << "Edit distance: " << sol_ed << endl;
 

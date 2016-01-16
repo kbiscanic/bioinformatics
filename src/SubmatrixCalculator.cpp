@@ -30,16 +30,27 @@ SubmatrixCalculator::SubmatrixCalculator(int _dimension, string _alphabet,
   this->deleteCost = _deleteCost;
   this->insertCost = _insertCost;
 
+  // map the provided alphabet to indices to simplify addressing
+  for (unsigned int i = 0; i < this->alphabet.size(); i++){
+    this->alphabetMap[this->alphabet[i]] = i;
+  }
+  this->alphabetMap[this->blankCharacter] = this->alphabet.size();
+
   this->initialSteps.reserve(pow(3, _dimension));
   this->initialStrings.reserve(pow(_alphabet.size(), _dimension));
 }
 
 void SubmatrixCalculator::calculate() {
-  printf("Clearing the submatrix data...\n");
-  results.clear();
-
   generateInitialSteps(0, "");
   generateInitialStrings(0, "", false);
+  calculateOffsets();
+
+  int startTime = clock();
+  int memoryRequired = charLeftOffset[this->dimension - 1][this->alphabet.size()] + charLeftOffset[this->dimension - 1][1] + 5;
+  cout << "Allocating " << memoryRequired << " locations." << endl;
+  this->resultIndex = new pair<string, string>[memoryRequired];
+  this->times[0] = (clock() - startTime) / double(CLOCKS_PER_SEC);
+  cout << "Allocation time: " << this->times[0] << "s" << endl;
 
   // setting up temporary matrix storage
   lastSubH.reserve(this->dimension + 1);
@@ -51,21 +62,14 @@ void SubmatrixCalculator::calculate() {
   }
 
   // all possible initial steps and strings combinations
-  int startTime = clock();
-  int collisions = 0;
+  startTime = clock();
   for (int strA = 0; strA < initialStrings.size(); strA++) {
     for (int strB = 0; strB < initialStrings.size(); strB++) {
       for (int stepC = 0; stepC < initialSteps.size(); stepC++) {
         for (int stepD = 0; stepD < initialSteps.size(); stepD++) {
-          string key = initialStrings[strA];
-          key += initialStrings[strB];
-          key += initialSteps[stepC];
-          key += initialSteps[stepD];
           // storing the resulting final rows for future reference
-          // DEBUG pair<string, string> temp = results[hash(key)];
-          // DEBUG if (temp.first.size() > 0)
-          // DEBUG    collisions++;
-          results[hash(key)] =
+          int offset = getOffset(initialStrings[strA], initialStrings[strB], initialSteps[stepC], initialSteps[stepD]);
+          resultIndex[offset] =
               calculateFinalSteps(initialStrings[strA], initialStrings[strB],
                                   initialSteps[stepC], initialSteps[stepD]);
         }
@@ -77,7 +81,6 @@ void SubmatrixCalculator::calculate() {
                   initialSteps.size() << " )" << endl;
     }
   }
-  // cout <<"Collisions "<< collisions <<endl;
   this->times[1] = (clock() - startTime) / double(CLOCKS_PER_SEC);
   cout << "Submatrix calculation time: " << this->times[1] << "s" << endl;
 }
