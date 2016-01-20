@@ -17,7 +17,7 @@ class SubmatrixCalculator {
 public:
     SubmatrixCalculator();
     SubmatrixCalculator(int _dimension, string _alphabet = "ATGC",
-                        char _blankCharacter = '-', int _replaceCost = 2,
+                        char _blankCharacter = '-', int _replaceCost = 1,
                         int _deleteCost = 1, int _insertCost = 1);
     ~SubmatrixCalculator();
     void calculate();

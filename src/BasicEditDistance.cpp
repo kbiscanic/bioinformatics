@@ -17,7 +17,7 @@ void BasicEditDistance::reset() {
   */
   for (int i = 0; i < 255; i++) {
     for (int j = i + 1; j < 256; j++) {
-      setCosts(i, j, !!i + !!j, true);
+      setCosts(i, j, !!(!!i + !!j), true);
     }
     setCosts(i, i, 0);
   }
